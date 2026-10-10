@@ -509,3 +509,11 @@ Answer: 36
 Exit:0
 Start_ns:1791649404277804960 End_ns:1791649440853608549
 root@flex:~#
+
+ew: 1 file pushed, 0 skipped. 3.1 MB/s (31341 bytes in 0.010s)
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin python3 /tmp/check_calc.py'"
+TRANSLATED: exp ( x * * 2 )
+PARSED: exp(x**2)
+DERIVATIVE: 2*x*exp(x**2)
+root@flex:~#
+
