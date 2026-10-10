@@ -29,3 +29,55 @@ MEDIUM LLM: qwen2.5:1.5b
 Answer: 4
 >
 root@flex:~#
+Expected answer: 72033
+
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'what is 1847 times 936 divided by 24\\n'\"'\"' | timeout 30 /usr/local/bin/llm.new 2\"'"
+Group 2 — Trigonometric functions
+Test 2.1 — Sine
+
+Asks: Differentiate sin(x).
+
+Expected answer: cos(x)
+
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'differentiate sine of x\\n'\"'\"' | timeout 30 /usr/local/bin/llm.new 2\"'"
+Test 2.2 — Function argument and exponent grouping
+
+Asks: Differentiate sin(x
+2
+), not (sinx)
+2
+.
+
+Expected answer: 2xcos(x
+2
+)
+
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'differentiate sine of x squared\\n'\"'\"' | timeout 30 /usr/local/bin/llm.new 2\"'"
+Test 2.3 — Cosine and tangent
+
+Asks: Differentiate cos(x)+tan(x).
+
+Expected answer: −sin(x)+sec
+2
+(x)
+
+Equivalent form: -sin(x) + 1/cos(x)^2
+
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'differentiate cosine of x plus tangent of x\\n'\"'\"' | timeout 30 /usr/local/bin/llm.new 2\"'"
+Group 3 — Logarithms and exponentials
+Test 3.1 — Natural logarithm and exponential
+
+Asks: Differentiate ln(x)+e
+x
+.
+
+Expected answer: 
+x
+1
+	​
+
++e
+x
+
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'differentiate natural log of x plus exp of x\\n'\"'\"' | timeout 30 /usr/local/bin/llm.new 2\"'"
+Test 3.2 — Log
