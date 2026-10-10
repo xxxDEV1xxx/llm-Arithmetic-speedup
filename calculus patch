@@ -653,3 +653,20 @@ PY
 
 adb push /tmp/llm.new /data/local/tmp/llm.new &&
 adb shell "su -c 'cp /data/local/tmp/llm.new /data/local/nhsystem/kali-arm64/usr/local/bin/llm.new && chmod 755 /data/local/nhsystem/kali-arm64/usr/local/bin/llm.new && chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin python3 -m py_compile /usr/local/bin/llm.new'"
+
+
+cat > /tmp/check_calc.py <<'PY'
+import runpy
+import sympy as sp
+
+d = runpy.run_path("/usr/local/bin/llm.new")
+x, y = sp.symbols("x y")
+
+translated = d["_calc_expression"]("exp of x squared")
+parsed = d["_calc_sympify"]("exp of x squared", x, y)
+
+print("TRANSLATED:", translated)
+print("PARSED:", parsed)
+print("DERIVATIVE:", sp.diff(parsed, x))
+PY
+
