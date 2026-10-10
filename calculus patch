@@ -617,3 +617,39 @@ python3 -m py_compile /tmp/llm.new
 
 adb push /tmp/llm.new /data/local/tmp/llm.new &&
 adb shell "su -c 'cp /data/local/tmp/llm.new /data/local/nhsystem/kali-arm64/usr/local/bin/llm.new && chmod 755 /data/local/nhsystem/kali-arm64/usr/local/bin/llm.new && chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin python3 -m py_compile /usr/local/bin/llm.new'"
+
+cp /tmp/llm.new "/tmp/llm.new.pre-exp-fix-$(date +%Y%m%d-%H%M%S)" &&
+python3 - <<'PY'
+from pathlib import Path
+
+p = Path("/tmp/llm.new")
+s = p.read_text()
+
+needle = '''            # Translate simple function calls before translating operators.
+            for phrase, fn in sorted(funcs.items(), key=lambda kv: -len(kv[0])):
+'''
+
+insert = '''            # Preserve exponentiation inside exponential function arguments.
+            t = re.sub(
+                r"\\\\b(exp|exponential)\\\\s+of\\\\s+([xy])\\\\s+squared\\\\b",
+                lambda m: f"exp({m.group(2)}**2)", t
+            )
+            t = re.sub(
+                r"\\\\b(exp|exponential)\\\\s+of\\\\s+([xy])\\\\s+cubed\\\\b",
+                lambda m: f"exp({m.group(2)}**3)", t
+            )
+
+            # Translate simple function calls before translating operators.
+            for phrase, fn in sorted(funcs.items(), key=lambda kv: -len(kv[0])):
+'''
+
+if s.count(needle) != 1:
+    raise SystemExit(f"Expected one insertion point; found {s.count(needle)}. No changes made.")
+
+p.write_text(s.replace(needle, insert, 1))
+compile(p.read_text(), str(p), "exec")
+print("Patched /tmp/llm.new; Python syntax is valid.")
+PY
+
+adb push /tmp/llm.new /data/local/tmp/llm.new &&
+adb shell "su -c 'cp /data/local/tmp/llm.new /data/local/nhsystem/kali-arm64/usr/local/bin/llm.new && chmod 755 /data/local/nhsystem/kali-arm64/usr/local/bin/llm.new && chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin python3 -m py_compile /usr/local/bin/llm.new'"
