@@ -197,6 +197,37 @@ The file was pushed and copied into the chroot. The syntax check has not shown S
 
 adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin python3 -m py_compile /usr/local/bin/llm && echo SYNTAX_OK'"
 
-If it prints SYNTAX_OK, test the algebra fast path with your timed command:
+root@flex:~# adb pull /data/local/nhsystem/kali-arm64/usr/local/bin/llm /tmp/llm.patchbase &&
+> cp /tmp/llm.patchbase /tmp/llm.new
+/data/local/nhsystem/kali-arm64/usr/local/bin/llm: 1 file pulled, 0 skipped. 2.6 MB/s (19494 bytes in 0.007s)
+root@flex:~# python3 - <<'PY'
+> p = "/tmp/llm.new"
+> with open(p) as f:
+>     s = f.read()
+>
+> old = r'^\s*solve\s+(?:for\s+[xy]\s+if\s+|the\s+equation\s+|these\s+equations\s+|the\s+system\s+)'
+> new = r'^\s*solve\s+(?:for\s+[xy]\s+if\s+|the\s+equation\s+|these\s+equations\s+|the\s+system\s+|)'
+>
+> if old not in s:
+>     raise SystemExit("PATCH FAILED: expected solve-prefix pattern not found; live file unchanged")
+> s = s.replace(old, new, 1)
+>
+> with open(p, "w") as f:
+>     f.write(s)
+> print("PATCH_OK: plain 'solve' prefix now supported")
+> PY
+PATCH_OK: plain 'solve' prefix now supported
+root@flex:~# python3 -m py_compile /tmp/llm.new &&
+> adb push /tmp/llm.new /data/local/tmp/llm.new &&
+> adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin python3 -m py_compile /usr/local/bin/llm'"
+/tmp/llm.new: 1 file pushed, 0 skipped. 1.0 MB/s (19495 bytes in 0.018s)
+root@flex:~# adb shell "su -c 'cp /data/local/tmp/llm.new /data/local/nhsystem/kali-arm64/usr/local/bin/llm && chmod 755 /data/local/nhsystem/kali-arm64/usr/local/bin/llm && echo PATCH_INSTALLED'"
+PATCH_INSTALLED
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'solve x squared minus five x plus six equals zero\\n'\"'\"' | timeout 60 /usr/local/bin/llm 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Solutions: x = 2; x = 3
+Answer: x = 2; x = 3
+>
+Exit:0
+Start_ns:1791646481742001820 End_ns:1791646487254253739
 
-adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bi
