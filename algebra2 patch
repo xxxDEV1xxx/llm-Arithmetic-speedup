@@ -1,0 +1,202 @@
+Excellent. SymPy 1.14.0 is already installed in the chroot, so we can use a real symbolic algebra engine instead of trying to teach the arithmetic parser to interpret equations with regular expressions alone.
+
+We'll add an Algebra Two fast path that recognizes plain-English prompts, translates them into symbolic expressions, solves supported equations with SymPy, and returns a concise result. Existing arithmetic handling stays intact, and unrelated questions still go to the LLM.
+
+The first patch should cover:
+
+Factoring quadratic expressions, such as “factor x squared minus five x plus six.”
+
+Solving linear and quadratic equations, including both roots.
+
+Solving two-variable linear systems.
+
+Exponential equations in common forms.
+
+Verifying solutions by substitution.
+
+Use this patch on the Flex host. It adds a SymPy-powered Algebra Two fast path for factoring, solving equations, and solving linear systems. It keeps the existing arithmetic fast path and falls back to the LLM for unsupported questions.
+
+1. Create the Algebra Two functions.
+
+cat > /tmp/algebra_funcs.py <<'EOF'
+
+import sympy as sp
+
+_ALG_NUMS = {
+    "zero":0, "one":1, "two":2, "three":3, "four":4,
+    "five":5, "six":6, "seven":7, "eight":8, "nine":9,
+    "ten":10, "eleven":11, "twelve":12, "thirteen":13,
+    "fourteen":14, "fifteen":15, "sixteen":16, "seventeen":17,
+    "eighteen":18, "nineteen":19, "twenty":20, "thirty":30,
+    "forty":40, "fifty":50, "sixty":60, "seventy":70,
+    "eighty":80, "ninety":90
+}
+
+def _alg_numbers(text):
+    words = re.findall(r"[a-z]+|[0-9]+|[^a-z0-9\s]", text.lower())
+    out = []
+    i = 0
+    while i < len(words):
+        w = words[i]
+        if w not in _ALG_NUMS and not w.isdigit():
+            out.append(w)
+            i += 1
+            continue
+        if w.isdigit():
+            out.append(w)
+            i += 1
+            continue
+        total = 0
+        current = 0
+        while i < len(words):
+            w = words[i]
+            if w in _ALG_NUMS:
+                current += _ALG_NUMS[w]
+                i += 1
+            elif w == "hundred":
+                current = max(current, 1) * 100
+                i += 1
+            elif w == "thousand":
+                total += max(current, 1) * 1000
+                current = 0
+                i += 1
+            elif w == "and" and i + 1 < len(words) and (
+                words[i + 1] in _ALG_NUMS or words[i + 1].isdigit()
+            ):
+                i += 1
+            else:
+                break
+        out.append(str(total + current))
+    return " ".join(out)
+
+def _alg_expression(text):
+    t = _alg_numbers(text)
+    t = re.sub(r"\braised to the power of\b", " to the power of ", t)
+    t = re.sub(r"\bto the power of\b", "**", t)
+    t = re.sub(r"\bsquared\b", "**2", t)
+    t = re.sub(r"\bcubed\b", "**3", t)
+    t = re.sub(r"\bmultiplied by\b|\btimes\b", "*", t)
+    t = re.sub(r"\bdivided by\b", "/", t)
+    t = re.sub(r"\bplus\b", "+", t)
+    t = re.sub(r"\bminus\b", "-", t)
+    t = re.sub(r"\bequals\b", "=", t)
+    t = re.sub(r"(?<=\d)\s+(?=[xy]\b)", "*", t)
+    t = re.sub(r"\b([xy])\s+(?=[xy]\b)", r"\1*", t)
+    t = re.sub(r"\s+", " ", t).strip()
+    return t
+
+def algebra_fast_path(text):
+    """Solve supported plain-English Algebra Two prompts; otherwise defer."""
+    raw = text.strip().lower()
+    if not re.search(r"\b(factor|solve|equation|equations)\b", raw):
+        return None
+
+    # Extract the expression to factor.
+    if re.match(r"^\s*factor\b", raw):
+        expr = re.sub(r"^\s*factor\s+", "", raw)
+        expr = re.sub(r"\b(the expression|the polynomial)\b", "", expr)
+        expr = re.sub(r"\band.*$", "", expr).strip()
+        expr = _alg_expression(expr)
+        if not re.fullmatch(r"[0-9xyXY+\-*/().= ]+", expr):
+            return None
+        try:
+            result = sp.factor(sp.sympify(expr, locals={"x":sp.Symbol("x"), "y":sp.Symbol("y")}))
+            return f"Factored form: {result}\nAnswer: {result}"
+        except Exception:
+            return None
+
+    # Extract equation clauses, including two equations joined by and.
+    if re.search(r"\bsolve\b", raw):
+        body = re.sub(
+            r"^\s*solve\s+(?:for\s+[xy]\s+if\s+|the\s+equation\s+|these\s+equations\s+|the\s+system\s+)",
+            "", raw
+        )
+        body = re.sub(r"\band give\b.*$", "", body)
+        body = re.sub(r"\band explain\b.*$", "", body)
+        body = re.sub(r"\band show\b.*$", "", body)
+        parts = re.split(r"\s+and\s+", body)
+        equations = []
+        for part in parts:
+            if "equals" not in part:
+                continue
+            expr = _alg_expression(part)
+            if not re.fullmatch(r"[0-9xyXY+\-*/().= ]+", expr):
+                return None
+            sides = expr.split("=")
+            if len(sides) != 2:
+                return None
+            try:
+                lhs = sp.sympify(sides[0], locals={"x":sp.Symbol("x"), "y":sp.Symbol("y")})
+                rhs = sp.sympify(sides[1], locals={"x":sp.Symbol("x"), "y":sp.Symbol("y")})
+                equations.append(sp.Eq(lhs, rhs))
+            except Exception:
+                return None
+
+        if not equations:
+            return None
+        x, y = sp.symbols("x y")
+        try:
+            variables = sorted(set().union(*(eq.free_symbols for eq in equations)), key=str)
+            if not variables:
+                return None
+            result = sp.solve(equations, variables, dict=True)
+            if not result:
+                return "No solutions found.\nAnswer: no solution"
+            if len(result) == 1:
+                pairs = [f"{v} = {sp.simplify(result[0][v])}" for v in variables if v in result[0]]
+                answer = ", ".join(pairs)
+                return f"Solution: {answer}\nAnswer: {answer}"
+            answer = "; ".join(
+                ", ".join(f"{v} = {r[v]}" for v in variables if v in r)
+                for r in result
+            )
+            return f"Solutions: {answer}\nAnswer: {answer}"
+        except Exception:
+            return None
+
+    return None
+EOF
+
+2. Add the hook before the existing arithmetic hook.
+
+cat > /tmp/algebra_hook.py <<'EOF'
+    _algebra = algebra_fast_path(messages[-1]["content"])
+    if _algebra is not None:
+        sys.stdout.write(_algebra + "\n")
+        sys.stdout.flush()
+        return _algebra
+EOF
+
+3. Rebuild the temporary script from the original, inserting both additions.
+
+This assumes /tmp/llm.new is your current working copy on Flex, as in your earlier commands. Start from your original script if that file already contains previous edits.
+
+sed -i '/^URL = /r /tmp/algebra_funcs.py' /tmp/llm.new
+sed -i '/^def model_chat/r /tmp/algebra_hook.py' /tmp/llm.new
+
+Keep the existing arithmetic hook as well. The algebra hook should run first, followed by the arithmetic hook, and then the normal model call.
+
+4. Push and verify syntax.
+
+adb push /tmp/llm.new /data/local/tmp/llm.new
+adb shell "su -c 'cp -n /data/local/nhsystem/kali-arm64/usr/local/bin/llm /data/local/nhsystem/kali-arm64/usr/local/bin/llm.bak; cp /data/local/tmp/llm.new /data/local/nhsystem/kali-arm64/usr/local/bin/llm && chmod 755 /data/local/nhsystem/kali-arm64/usr/local/bin/llm'"
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin python3 -m py_compile /usr/local/bin/llm && echo SYNTAX_OK'"
+
+5. Test the factoring prompt.
+
+Use your existing timed command structure with the prompt:
+
+factor x squared minus five x plus six
+
+Expected factorization: (x - 3)*(x - 2).
+
+Important limitation: this first version deliberately handles a bounded set of English equation forms. It does not yet implement word problems or every exponential-equation phrasing. We should validate the basic factoring and equation paths before expanding coverage.
+
+
+The file was pushed and copied into the chroot. The syntax check has not shown SYNTAX_OK yet, so run it now:
+
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin python3 -m py_compile /usr/local/bin/llm && echo SYNTAX_OK'"
+
+If it prints SYNTAX_OK, test the algebra fast path with your timed command:
+
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bi
