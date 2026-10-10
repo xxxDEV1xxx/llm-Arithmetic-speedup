@@ -690,3 +690,5 @@ p.write_text(s2)
 print("Corrected regex escaping; Python syntax is valid.")
 PY
 
+adb push /tmp/llm.new /data/local/tmp/llm.new &&
+adb shell "su -c 'cp /data/local/tmp/llm.new /data/local/nhsystem/kali-arm64/usr/local/bin/llm.new && chmod 755 /data/local/nhsystem/kali-arm64/usr/local/bin/llm.new && chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin python3 -m py_compile /usr/local/bin/llm.new'"
