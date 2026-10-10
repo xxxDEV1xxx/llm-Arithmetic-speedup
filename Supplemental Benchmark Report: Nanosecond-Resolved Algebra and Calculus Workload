@@ -1,127 +1,187 @@
-# Supplemental Benchmark Report: Nanosecond-Resolved Algebra and Calculus Workload
+# Supplemental Technical Report: Natural-Language Algebra and Calculus Execution on a Local 1.5B Language Model
 
-**Project:** Resource-Aware Local Language Model Runtime
-**Model:** Qwen 2.5 1.5B (`qwen2.5:1.5b`)
+**Project:** Local LLM Runtime and Mathematical Workload Evaluation
 **Author:** Christopher T. Williams
-**Evaluation type:** Multi-entry mathematical correctness and execution-latency benchmark
-**Status:** Supplemental experimental results
+**Model:** Qwen 2.5 1.5B (`qwen2.5:1.5b`)
+**Benchmark harness:** `STRESSTEST1.py`
+**Evaluation scope:** Approximately 140 numbered mathematical test jobs
+**Timing method:** Device-side nanosecond-resolution start and end timestamps
 
-## 1. Purpose
+## 1. The achievement being evaluated
 
-This supplemental report documents the mathematical workload evaluation of a locally deployed language model runtime. The test exercises arithmetic, algebraic manipulation, equation solving, differentiation, integration, and limits while recording execution timing at nanosecond resolution.
+This experiment evaluates a small language model operating locally on a constrained device environment. The model is presented with mathematical instructions expressed in ordinary language and is expected to return mathematically meaningful results across multiple levels of complexity.
 
-The objective is to evaluate the system as an operational mathematical workload rather than solely as a conversational language model. The benchmark considers answer correctness, execution consistency, timeout behavior, and the ability to measure performance across individual processing stages.
+The significance is not simply that the model can calculate arithmetic. The test progresses from numerical expressions to algebraic transformations, equation solving, derivatives of composite functions, products and quotients, integration, definite integrals, and limits.
 
-Nanosecond-resolution timestamps provide the basis for examining where execution time is spent, provided that the relevant processing stages have independent timestamp boundaries in the test implementation.
+These tasks require the system to interpret the requested operation, identify the mathematical structure described by the prompt, and produce an answer consistent with that structure.
 
-## 2. Workload and evaluation scope
+For example, the workload includes instructions to:
 
-The reported workload contains approximately 140 jobs. This report is intended as the supplemental write-up for the 130-entry benchmark component; the exact number of entries belonging to that component must be confirmed against the original test script and run log.
+* Factor \(x^2-5x+6\).
+* Solve equations by completing the square.
+* Solve equations involving logarithms, exponentials, and square roots.
+* Differentiate composite expressions such as \(\sin(x^3+2x^2+1)\).
+* Differentiate products such as \(x^2\sin(x)\) and \(x^2e^x\).
+* Differentiate quotients of polynomial expressions.
+* Integrate \(xe^{x^2}\).
+* Evaluate definite integrals.
+* Evaluate limits involving indeterminate-looking quotients such as \((x^3-8)/(x-2)\) as \(x\) approaches 2.
 
-The evaluated problem categories include:
+This progression matters. A model that returns the correct result for a single arithmetic expression has demonstrated much less than a model that consistently interprets different mathematical instructions and produces the corresponding symbolic forms.
 
-* Arithmetic calculations.
-* Algebraic factoring and equation solving.
-* Symbolic differentiation.
-* Symbolic and definite integration.
-* Limit evaluation.
+The reported evaluation indicates that Qwen 2.5 1.5B completed this broader workload with strong mathematical correctness, subject to two timeout failures.
 
-The evaluation uses the locally deployed `qwen2.5:1.5b` model. The reported grading was performed by Grok using the resulting test output.
+## 2. The benchmark's actual timing boundary
 
-## 3. Reported benchmark results
+The timing mechanism in `STRESSTEST1.py` is essential to interpreting the results correctly.
 
-| Metric                          | Reported result                         |
-| ------------------------------- | --------------------------------------- |
-| Total workload                  | Approximately 140 jobs                  |
-| Successful jobs                 | Vast majority                           |
-| Timeout failures                | 2                                       |
-| Timeout exit code               | `124`                                   |
-| Timeout conditions              | Limit problems with a 15-second timeout |
-| Arithmetic correctness          | Almost all reported answers correct     |
-| Factoring and equation solving  | Reported correct                        |
-| Differentiation and integration | Reported correct                        |
-| Limit evaluation                | Correct when completed                  |
-| Typical query latency           | Approximately 3.5–4.5 seconds           |
-| Longest successful runs         | Approximately 4.5–5 seconds             |
-| External grading result         | A−                                      |
+For each job, the host launches an ADB shell command. That command enters the device's execution environment, establishes the Kali chroot, and starts the configured LLM wrapper. The timestamps are created inside the device-side shell after that setup has already occurred.
 
-These figures are the reported evaluation results, not independently recalculated statistics. Exact success percentages, category-specific accuracy rates, and latency percentiles require the underlying job records.
+The relevant implementation is:
 
-## 4. Nanosecond-resolution timing
+```sh
+T0=$(date +%s%N)
+printf 'PROMPT\n' | timeout TIMEOUT MODEL 2
+RC=$?
+T1=$(date +%s%N)
+echo Exit:$RC
+echo Start_ns:$T0 End_ns:$T1
+```
 
-The test's use of nanosecond timestamps enables fine-grained elapsed-time measurement across the workload. For each stage with recorded start and end timestamps, elapsed time can be calculated as:
+This is a schematic representation of the timestamp sequence, not a replacement for the original script.
 
-$$
-T_{\mathrm{stage,ns}} =
-t_{\mathrm{end,ns}}-t_{\mathrm{start,ns}}
-$$
-
-For presentation, the same interval can be converted into milliseconds:
+The measured interval is:
 
 $$
-T_{\mathrm{stage,ms}} =
-\frac{T_{\mathrm{stage,ns}}}{10^6}
+T_{\mathrm{QA}}=T_1-T_0
 $$
 
-The raw nanosecond values should remain available for auditing and recalculation. Summary tables should use converted units that make comparisons between stages and individual jobs easier to interpret.
+where \(T_0\) is recorded immediately before the prompt is piped into the model wrapper and \(T_1\) is recorded after the wrapper command returns.
 
-The timestamp resolution must not be confused with measurement accuracy. The clock source, placement of timestamp calls, and inclusion of subprocess or model-execution overhead determine what each interval actually measures.
+**Consequently, the measured interval is not the time between consecutive answers and does not include the initial host-side ADB launch and chroot setup preceding \(T_0\).**
 
-### Stage-level reporting requirements
+The interval captures the execution of the prompt pipeline and model wrapper through its return, including any inference or model initialization occurring within that interval. It may also include wrapper processing and output-related work performed before the command returns. It should therefore be described as the instrumented per-question execution interval, rather than pure neural-network inference time.
 
-Where the implementation records independent boundaries, the supplemental benchmark should report:
+The repeated ADB invocation contributes to overall test-run duration, but its pre-timestamp setup cost must not be attributed to the model's measured question latency.
 
-1. **Job initialization:** Time to prepare and launch a test job.
-2. **Request preparation:** Time spent constructing or routing the mathematical request.
-3. **Inference execution:** Time attributable to the model request, as defined by the instrumentation.
-4. **Result handling:** Time spent collecting and processing the returned answer.
-5. **End-to-end execution:** Total elapsed time from the defined start of a job to its recorded completion.
+This distinction changes the interpretation of the benchmark. The reported 3.5–4.5-second typical latency and approximately 4.5–5-second longest successful runs are external grading estimates that should not be presented as verified model inference times. The device-side `Start_ns` and `End_ns` records provide the appropriate basis for calculating the per-question intervals.
 
-These are measurement categories, not claims that every stage is already instrumented. A stage should only be reported as measured when its actual timestamp boundaries exist in the implementation. The individual intervals should not be added together unless their boundaries are mutually exclusive and their coverage is complete.
+## 3. Nanosecond-resolution measurement
 
-## 5. Mathematical correctness and completion
+The harness records epoch timestamps using `date +%s%N`. For every job with valid start and end timestamps, the elapsed interval is calculated as:
 
-The external grading reported strong performance across the tested mathematical categories. Arithmetic, factoring, equation solving, differentiation, and integration were reported as correct for the evaluated answers. Limit problems were also reported correct when they completed.
+$$
+T_{\mathrm{QA,ns}}=t_{\mathrm{end,ns}}-t_{\mathrm{start,ns}}
+$$
 
-Two jobs terminated with exit code `124` under the configured 15-second timeout. These should be classified as timeouts rather than automatically counted as incorrect mathematical answers. They represent failures to complete within the configured execution deadline.
+The interval can then be expressed in milliseconds:
 
-For formal reporting, the benchmark should distinguish:
+$$
+T_{\mathrm{QA,ms}}=
+\frac{T_{\mathrm{QA,ns}}}{10^6}
+$$
 
-* **Completion rate:** Jobs that produced a completed result divided by all attempted jobs.
-* **Timeout rate:** Jobs that exceeded their execution deadline divided by all attempted jobs.
-* **Answer accuracy:** Correct completed answers divided by completed answers that could be evaluated.
-* **Overall successful-job rate:** Jobs producing a correct answer within the deadline divided by all attempted jobs.
+The important feature is the independent timing boundary around each question. It allows each answer to be associated with its own measured execution interval, rather than estimating model speed from the elapsed time between printed answers.
 
-This separation prevents mathematical accuracy from being conflated with runtime reliability.
+For a complete performance analysis, the individual intervals should be retained alongside the prompt, answer, selected model wrapper, exit code, and job identifier.
 
-## 6. Architectural significance
+The timestamp format provides nanosecond resolution, but the actual timing accuracy depends on the device clock implementation and timestamp overhead. Because `date +%s%N` uses wall-clock time, a monotonic clock would be preferable for future elapsed-time instrumentation. This qualification does not justify substituting inter-answer gaps for the existing per-question measurements.
 
-The principal contribution demonstrated by this evaluation is the application of repeatable workload testing and fine-grained timing to a local mathematical inference system.
+## 4. What the mathematical workload demonstrates
 
-The test provides evidence relevant to three engineering objectives.
+### 4.1 From numerical arithmetic to algebraic structure
 
-**First, workload coverage.** Testing multiple areas of algebra and calculus provides broader evidence than a benchmark consisting only of basic arithmetic.
+The initial workload contains increasingly involved arithmetic expressions, including combinations of multiplication, division, addition, and subtraction.
 
-**Second, operational measurement.** Per-job timing can reveal variation across problem types and help identify stages responsible for latency, provided that the instrumentation measures those stages independently.
+The subsequent algebraic prompts require different operations: factoring polynomials, solving quadratic equations, applying completing-the-square procedures, solving systems, and interpreting equations involving logarithms and exponentials.
 
-**Third, explicit failure accounting.** Recording timeout exits makes it possible to evaluate both mathematical output and the system's ability to finish work within a defined deadline.
+This is a transition from numerical calculation to structural manipulation. The evaluation therefore probes more than whether the model can reproduce isolated arithmetic facts.
 
-These results support the reported performance of the tested configuration. They do not, by themselves, establish that the runtime architecture outperforms an earlier configuration. That conclusion requires a comparable baseline measured with the same workload, model, timeout policy, and timing definitions.
+### 4.2 Symbolic differentiation
 
-## 7. Limitations
+The calculus workload includes elementary functions and more demanding compositions.
 
-The reported grade and summary metrics are not a substitute for a reproducible raw-data analysis. The available summary does not establish the exact number of entries in the 130-entry component, the exact number of successful jobs, category-specific denominators, median or percentile latency, or the distribution of individual stage timings.
+Examples include:
 
-The two timeout events also warrant separate analysis. Increasing the timeout could establish whether the questions eventually complete, but doing so would change the benchmark conditions and should be reported as a separate run.
+$$
+\frac{d}{dx}e^{x^2}=2xe^{x^2}
+$$
 
-Finally, timestamp precision alone does not demonstrate lower energy consumption, reduced thermal load, improved warm-state retention, or better CPU-governor behavior. Those outcomes require separate measurements.
+and:
+
+$$
+\frac{d}{dx}e^{x^2+3x}
+=(2x+3)e^{x^2+3x}
+$$
+
+For trigonometric compositions, the model must account for the derivative of the inner expression. For products and quotients, it must return an expression consistent with the product or quotient rule.
+
+These are qualitatively different demands from arithmetic evaluation. Correct results indicate that the system can produce symbolic mathematical outputs corresponding to instructions expressed in natural language.
+
+### 4.3 Integration and limits
+
+Integration introduces another set of mathematical transformations. For example:
+
+$$
+\int xe^{x^2}\,dx=\frac{e^{x^2}}{2}+C
+$$
+
+A definite integral requires evaluating the antiderivative at the specified bounds. A limit involving a removable discontinuity requires identifying or applying an appropriate simplification before evaluating the limiting value.
+
+The test's inclusion of these tasks broadens the scope of the evaluation to integral calculus and limit evaluation rather than restricting it to derivatives.
+
+The benchmark's reported results indicate strong performance across these categories. The exact per-category success rates should be calculated from the recorded answers rather than inferred from the overall grade.
+
+## 5. Reported run results
+
+The external grading summary supplied for this run reports:
+
+| Measure                         | Reported finding                       |
+| ------------------------------- | -------------------------------------- |
+| Number of jobs                  | Approximately 140                      |
+| Arithmetic                      | Almost all answers correct             |
+| Factoring and equation solving  | Reported correct                       |
+| Differentiation and integration | Reported correct                       |
+| Limits                          | Correct when completed                 |
+| Timeout failures                | 2                                      |
+| Timeout exit code               | `124`                                  |
+| Timeout conditions              | Limit problems using a 15-second limit |
+| External grade                  | A−                                     |
+
+The two timeout events represent jobs that did not complete before their configured deadline. They should be counted as completion failures, not automatically classified as incorrect mathematical answers.
+
+The grade is an external assessment of the reported output. It is not a substitute for independent answer verification or a calculation of exact accuracy percentages.
+
+## 6. The role of the runtime harness
+
+The benchmark is also an evaluation of a deployed system, not just a model checkpoint in isolation.
+
+`STRESSTEST1.py` automates a sequence of mathematical prompts, assigns timeouts, invokes the configured local wrapper through ADB, and records execution status and device-side timestamps.
+
+This creates a repeatable test sequence and associates individual questions with execution outcomes. It provides the foundation for examining correctness and latency across a varied mathematical workload.
+
+One implementation detail must be preserved when interpreting the results: the first 15 jobs explicitly select `/usr/local/bin/llm`, while the remaining jobs default to `/usr/local/bin/llm.new`. The run therefore should not be described as using one uniform wrapper configuration until those entry points are confirmed to select equivalent implementations and model settings.
+
+That distinction does not negate the reported answers. It defines the configuration boundary necessary for a reproducible comparison.
+
+## 7. Interpretation and limitations
+
+The strongest supported conclusion is that the tested local model reportedly handled a broad set of natural-language mathematics prompts with high correctness, while the harness recorded per-question execution intervals and exposed two deadline failures.
+
+The available summary does not establish the exact number of correct answers, the precise distribution of measured question latencies, or a controlled speed improvement over an earlier configuration. Those claims require the individual records.
+
+Nor should the measured wrapper interval automatically be equated with raw token-generation latency. It is the interval between the actual instrumentation boundaries. Separating prompt handling, model initialization, inference, and output processing would require additional instrumentation inside those stages.
+
+These are measurement qualifications, not reasons to disregard the benchmark. The distinction between per-question execution and inter-question orchestration is precisely what makes the existing timestamps valuable.
 
 ## 8. Conclusion
 
-The reported algebra and calculus run received an A− assessment from Grok, with approximately 140 jobs, two timeout failures, broadly correct mathematical results, and typical query latency of approximately 3.5–4.5 seconds.
+This experiment demonstrates the reported mathematical capability of a compact, locally deployed language model across arithmetic, algebra, and calculus, supported by an automated workload harness that records execution outcomes and per-question timestamps.
 
-The strongest evidence from this run is the combination of broad mathematical workload coverage, recorded execution outcomes, and nanosecond-resolution timing. The next step is to derive exact per-job and per-stage statistics from the original script and raw output, then compare those results against a controlled baseline.
+The key performance distinction is that the repeated ADB invocation is not the same thing as the model's measured question latency. The existing device-side timestamp boundaries provide the relevant intervals for assessing each question independently.
 
-This supplemental report documents the reported findings without presenting unverified design goals or unmeasured performance improvements as experimental results.
+The result is more informative than a generic claim that a small model can answer mathematics questions: it documents a varied workload, exposes deadline failures, and establishes a measurement method for evaluating the actual deployed runtime.
 
-**Attribution:** Research, implementation, and benchmark work are attributed to Christopher T. Williams. External grading is identified separately. Any AI assistance should be credited separately from the author's original implementation and research contributions.
+The next quantitative step is to extract every valid `Start_ns`/`End_ns` pair, associate it with its job and answer, and calculate exact latency distributions and verified correctness rates. That analysis would turn the reported A− assessment into a reproducible technical result.
+
+**Attribution:** The research, implementation, test harness, and experimental work are attributed to Christopher T. Williams. External grading and any AI-assisted editorial work should be credited separately from the author's original contributions.
