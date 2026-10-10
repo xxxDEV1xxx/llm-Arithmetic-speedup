@@ -522,3 +522,110 @@ MEDIUM LLM: qwen2.5:1.5b
 > Derivative: 2*x*exp(x**2)
 Answer: 2*x*exp(x**2)
 >
+Here are 10 increasingly difficult calculus stress tests for llm.new, using your same timing format. Run them one at a time so you can track correctness, exit code, and elapsed time. Each test uses model selector 2.
+
+1. Polynomial derivative
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate three x cubed plus two x squared minus five x plus seven\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+
+Expected derivative: 9x
+2
++4x−5
+
+2. Product rule with exponential
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate x squared times exp of x\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+
+Expected derivative: e
+x
+(x
+2
++2x)
+
+3. Exponential chain rule
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate exp of the quantity x squared plus three x\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+
+Expected derivative: (2x+3)e
+x
+2
++3x
+
+4. Trigonometric product
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate sine of x times cosine of x\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+
+Expected derivative: cos
+2
+x−sin
+2
+x
+
+5. Quotient rule with a cubic numerator
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate x cubed plus one all over x squared minus one\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+
+Expected derivative:
+
+(x
+2
+−1)
+2
+3x
+2
+(x
+2
+−1)−2x(x
+3
++1)
+	​
+
+6. Logarithm chain rule
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate natural log of the quantity x cubed plus x squared plus one\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+
+Expected derivative:
+
+x
+3
++x
+2
++1
+3x
+2
++2x
+	​
+
+7. Indefinite integral with substitution structure
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'integrate x times exp of x squared\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$ (date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+
+Expected integral: 
+2
+1
+	​
+
+e
+x
+2
++C
+
+8. Definite polynomial integral
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'integrate three x squared plus two x from zero to three\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+
+Expected integral: 36
+
+9. Limit with removable singularity
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'find the limit of x cubed minus eight all over x minus two as x approaches two\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$ (date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+
+Expected limit: 12
+
+10. Nested chain rule with trigonometry and a polynomial
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate sine of the quantity x cubed plus two x squared plus one\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+
+Expected derivative:
+
+(3x
+2
++4x)cos(x
+3
++2x
+2
++1)
+
+Timing note: The commands print nanosecond start and end timestamps, not elapsed time directly. Calculate elapsed seconds as (End_ns−Start_ns)/10
+9
+. Tests 7 and 9 above have a typo in the end timestamp assignment; use T1=\\\$(date +%s%N) (without a space) if you run those two.
