@@ -325,3 +325,70 @@ adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/
 Expected: (x,y)=(4,3) and (−3,−4).
 
 After each command, check three things: whether it returns before the 60-second timeout, whether Exit:0 appears, and whether the mathematical result matches the expected answer. Exit:124 indicates the timeout expired. A zero exit code alone does not mean the answer is correct.
+
+
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'solve x squared minus five x plus six equals zero\\n'\"'\"' | timeout 60 /usr/local/bin/llm 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Solutions: x = 2; x = 3
+Answer: x = 2; x = 3
+>
+Exit:0
+Start_ns:1791647429515685334 End_ns:1791647433978025562
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'solve two x squared plus seven x plus three equals zero\\n'\"'\"' | timeout 60 /usr/local/bin/llm 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Solutions: x = -3; x = -1/2
+Answer: x = -3; x = -1/2
+>
+Exit:0
+Start_ns:1791647438148024251 End_ns:1791647441739734479
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'solve x squared plus six x minus seven equals zero by completing the square\\n'\"'\"' | timeout 60 /usr/local/bin/llm 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Exit:124
+Start_ns:1791647445374456554 End_ns:1791647505402877203
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'solve the system y equals x squared and y equals two x plus three\\n'\"'\"' | timeout 60 /usr/local/bin/llm 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Solutions: x = -1, y = 1; x = 3, y = 9
+Answer: x = -1, y = 1; x = 3, y = 9
+>
+Exit:0
+Start_ns:1791647515258964388 End_ns:1791647519245603770
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'solve two raised to the power of x equals thirty two\\n'\"'\"' | timeout 60 /usr/local/bin/llm 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Solution: x = 5
+Answer: x = 5
+>
+Exit:0
+Start_ns:1791647523715888498 End_ns:1791647528380770417
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'solve square root of two x plus three equals x\\n'\"'\"' | timeout 60 /usr/local/bin/llm 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Solution: x = 3\nAnswer: x = 3
+>
+Exit:0
+Start_ns:1791647533320450645 End_ns:1791647536971251219
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'solve one over x minus one plus one over x plus one equals one\\n'\"'\"' | timeout 60 /usr/local/bin/llm 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Solution: x = 1 - sqrt(2), x = 1 + sqrt(2) (with x != -1, 1)\nAnswer: x = 1 - sqrt(2), x = 1 + sqrt(2)
+>
+Exit:0
+Start_ns:1791647541726112254 End_ns:1791647545465497944
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'solve log base two of x plus log base two of x minus two equals three\\n'\"'\"' | timeout 60 /usr/local/bin/llm 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Solution: x = 4 (domain x > 2)\nAnswer: x = 4
+>
+Exit:0
+Start_ns:1791647550119695517 End_ns:1791647553907787899
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'solve one divided by x minus one divided by quantity x plus one equals one\\n'\"'\"' | timeout 60 /usr/local/bin/llm 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> [knowledge: 1]
+Answer: x = 0.5
+>
+Exit:0
+Start_ns:1791647558127757435 End_ns:1791647571218885425
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'solve the system x squared plus y squared equals twenty five and y equals x minus one\\n'\"'\"' | timeout 60 /usr/local/bin/llm 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Solutions: x = -3, y = -4; x = 4, y = 3
+Answer: x = -3, y = -4; x = 4, y = 3
+>
+Exit:0
+Start_ns:1791647579683146919 End_ns:1791647583664150224
+root@flex:~#
