@@ -714,3 +714,5 @@ print("Patched:", p)
 PY
 python3 -m py_compile /tmp/llm.new
 
+adb push /tmp/llm.new /data/local/tmp/llm.new
+adb shell "su -c 'cp /data/local/tmp/llm.new /data/local/nhsystem/kali-arm64/usr/local/bin/llm.new && chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin python3 /tmp/check_calc.py'"
