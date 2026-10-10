@@ -178,3 +178,152 @@ Indefinite integral: x
 Definite integral: 9
 
 Limit: 4
+
+cat > /tmp/patch_translator.py <<'PY'
+from pathlib import Path
+
+p = Path("/tmp/llm.new")
+s = p.read_text()
+
+if "def _calc_expression(text):" in s:
+    raise SystemExit("STOP: _calc_expression already exists")
+
+anchor = "def calculus_fast_path(text):"
+if s.count(anchor) != 1:
+    raise SystemExit("STOP: expected exactly one calculus_fast_path")
+
+parser = r'''
+def _calc_expression(text):
+    """Translate a restricted natural-language math expression to SymPy syntax."""
+    t = text.strip().lower()
+    t = re.sub(r"[?!.]+$", "", t).strip()
+    t = re.sub(r"\b(the expression|the quantity|the function)\b", "", t)
+    t = re.sub(r"\bthe natural logarithm of\b|\bnatural log of\b|\bln of\b", " ln ", t)
+    t = re.sub(r"\bbase ten logarithm of\b|\blog base ten of\b", " log10 ", t)
+    t = re.sub(r"\blog base two of\b", " log2 ", t)
+    t = re.sub(r"\blogarithm of\b|\blog of\b", " log ", t)
+    t = re.sub(r"\bsine of\b|\bsine\b", " sin ", t)
+    t = re.sub(r"\bcosine of\b|\bcosine\b", " cos ", t)
+    t = re.sub(r"\btangent of\b|\btangent\b", " tan ", t)
+    t = re.sub(r"\bsquare root of\b|\bsquare root\b", " sqrt ", t)
+    t = re.sub(r"\bexponential of\b|\bexp of\b", " exp ", t)
+    t = re.sub(r"\be to the power of\b", " exp ", t)
+    t = re.sub(r"\bto the power of\b", "**", t)
+    t = re.sub(r"\bsquared\b", "**2", t)
+    t = re.sub(r"\bcubed\b", "**3", t)
+    t = re.sub(r"\bplus\b", "+", t)
+    t = re.sub(r"\bminus\b", "-", t)
+    t = re.sub(r"\bmultiplied by\b|\btimes\b", "*", t)
+    t = re.sub(r"\bdivided by\b", "/", t)
+    t = re.sub(r"\bequals\b", "=", t)
+    t = re.sub(r"\bpi\b", "pi", t)
+    t = re.sub(r"\binfinity\b|\binfinite\b", "oo", t)
+
+    # Convert English number words using the existing helper, if available.
+    try:
+        t = _alg_numbers(t)
+    except Exception:
+        pass
+
+    # Normalize function notation. A function takes one atom or a parenthesized
+    # expression as its argument; callers should use "quantity ... all over ..."
+    # or explicit parentheses when grouping matters.
+    t = re.sub(r"\b(ln|log|log2|log10|sin|cos|tan|sqrt|exp)\s+([xy])\b",
+               r"\1(\2)", t)
+    t = re.sub(r"\b(ln|log|log2|log10|sin|cos|tan|sqrt|exp)\s+(\d+(?:\.\d+)?)\b",
+               r"\1(\2)", t)
+    t = re.sub(r"\b(ln|log|log2|log10|sin|cos|tan|sqrt|exp)\s+\(([^()]*)\)",
+               r"\1(\2)", t)
+
+    # Explicit grouping: "the quantity A, all over B" => (A)/(B).
+    m = re.fullmatch(r"\s*(.*?)\s*,?\s*all over\s+(.*?)\s*", t)
+    if m:
+        t = "(" + m.group(1).strip() + ")/(" + m.group(2).strip() + ")"
+
+    # Convert implicit multiplication in common algebra notation.
+    t = re.sub(r"(?<=\d)\s+(?=[xy]\b)", "*", t)
+    t = re.sub(r"\b([xy])\s+(?=[xy]\b)", r"\1*", t)
+    t = re.sub(r"\s+", " ", t).strip()
+
+    # Whitelist syntax before returning it for sympify.
+    if not re.fullmatch(r"[0-9xy+\-*/().= ,a-zA-Z_]+", t):
+        return None
+
+    # Only approved functions and symbols are permitted.
+    names = set(re.findall(r"\b[A-Za-z_]\w*\b", t))
+    allowed = {
+        "x", "y", "pi", "oo", "sin", "cos", "tan", "sqrt",
+        "ln", "log", "log2", "log10", "exp"
+    }
+    if not names.issubset(allowed):
+        return None
+
+    return t
+
+
+def _calc_sympify(text):
+    """Parse only the whitelisted expression language."""
+    expr = _calc_expression(text)
+    if expr is None:
+        return None
+    x, y = sp.symbols("x y", real=True)
+    loc = {
+        "x": x, "y": y, "pi": sp.pi, "oo": sp.oo,
+        "sin": sp.sin, "cos": sp.cos, "tan": sp.tan,
+        "sqrt": sp.sqrt, "ln": sp.log, "log": sp.log,
+        "log2": lambda z: sp.log(z, 2),
+        "log10": lambda z: sp.log(z, 10),
+        "exp": sp.exp,
+    }
+    try:
+        return sp.sympify(expr, locals=loc)
+    except Exception:
+        return None
+
+
+'''
+
+s = s.replace(anchor, parser + anchor, 1)
+
+# Use the richer parser in calculus handlers, retaining the existing fast path
+# for compatibility. Replace only calls inside calculus_fast_path.
+start = s.index("def calculus_fast_path(text):")
+end = s.index("\ndef algebra_fast_path", start)
+section = s[start:end]
+section = section.replace("_alg_expression(m.group(1))", "_calc_expression(m.group(1))")
+section = section.replace("_alg_expression(v)", "_calc_expression(v)")
+section = section.replace("_alg_expression(m.group(3))", "_calc_expression(m.group(3))")
+
+# Replace existing restricted sympify calls in this handler with the safe
+# symbolic parser, while leaving the explicit rational and limit examples intact.
+section = section.replace(
+    'sp.sympify(expr_text, locals={"x": x, "y": y})',
+    '_calc_sympify(m.group(1)) if m else None'
+)
+# The above substitution is not safe for every branch (m groups differ), so
+# restore a clean implementation for general derivative/integral parsing below.
+# Use direct sympify with an explicit, fixed local dictionary instead.
+section = section.replace(
+    '_calc_sympify(m.group(1)) if m else None',
+    'sp.sympify(expr_text, locals={"x": x, "y": y, "sin": sp.sin, "cos": sp.cos, "tan": sp.tan, "sqrt": sp.sqrt, "ln": sp.log, "log": sp.log, "log2": lambda z: sp.log(z, 2), "log10": lambda z: sp.log(z, 10), "exp": sp.exp, "pi": sp.pi})'
+)
+section = section.replace(
+    'sp.sympify(lo_text, locals={"x": x, "y": y})',
+    'sp.sympify(lo_text, locals={"x": x, "y": y, "pi": sp.pi, "oo": sp.oo})'
+)
+section = section.replace(
+    'sp.sympify(hi_text, locals={"x": x, "y": y})',
+    'sp.sympify(hi_text, locals={"x": x, "y": y, "pi": sp.pi, "oo": sp.oo})'
+)
+section = section.replace(
+    'sp.sympify(point_text, locals={"x": x, "y": y})',
+    'sp.sympify(point_text, locals={"x": x, "y": y, "pi": sp.pi, "oo": sp.oo})'
+)
+
+s = s[:start] + section + s[end:]
+p.write_text(s)
+print("TRANSLATOR_PATCH_OK")
+PY
+
+python3 /tmp/patch_translator.py
+python3 -m py_compile /tmp/llm.new
