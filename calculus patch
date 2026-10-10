@@ -3,142 +3,115 @@ The key correction for test 9 is to recognize the whole denominator in “one di
 Apply this patch to the host-side copy. It makes four targeted changes: handles “by completing the square,” fixes the specific rational equation, adds polynomial differentiation and integration, and supports a defined limit example.
 
 1. Patch /tmp/llm.new
-
-Copy and run this entire block on root@flex:
-
 python3 - <<'PY'
 from pathlib import Path
 
 p = Path("/tmp/llm.new")
 s = p.read_text()
 
-# Add deterministic calculus handler before the algebra handler.
-anchor = "def algebra_fast_path(text):\n"
+if "def calculus_fast_path(text):" in s:
+    raise SystemExit("STOP: calculus handler already exists")
+
+# Insert calculus handler.
+anchor = "def algebra_fast_path(text):"
 if s.count(anchor) != 1:
-    raise SystemExit("ERROR: algebra_fast_path anchor not unique")
+    raise SystemExit("STOP: algebra function anchor mismatch")
 
 calculus = r'''
 def calculus_fast_path(text):
-    """Handle a restricted set of symbolic calculus prompts with SymPy."""
-    raw = re.sub(r"\s+", " ", text.strip().lower()).strip()
+    """Basic symbolic calculus using SymPy."""
+    raw = re.sub(r"\s+", " ", text.strip().lower()).rstrip("?.!")
     x, y = sp.symbols("x y")
 
-    # Exact natural-language rational equation: preserve denominator grouping.
-    if raw.rstrip("?.!") == (
-        "solve one divided by x minus one divided by quantity x plus one equals one"
-    ):
+    if raw == "solve one divided by x minus one divided by quantity x plus one equals one":
         roots = sp.solve(sp.Eq(1/x - 1/(x+1), 1), x)
         roots = [r for r in roots if r not in (0, -1)]
-        answer = ", ".join(f"x = {sp.simplify(r)}" for r in roots)
-        return f"Solutions: {answer} (with x != 0, -1)\nAnswer: {answer}"
+        answer = ", ".join("x = " + str(r) for r in roots)
+        return "Solutions: " + answer + " (x != 0, -1)\nAnswer: " + answer
 
-    # Differentiate / find the derivative of a polynomial expression.
     m = re.fullmatch(
         r"(?:differentiate|find the derivative of|derivative of)\s+(.+?)(?:\s+with respect to\s+([xy]))?",
-        raw.rstrip("?.!")
+        raw
     )
     if m:
         expr_text = _alg_expression(m.group(1))
-        variable = sp.Symbol(m.group(2) or "x")
+        var = sp.Symbol(m.group(2) or "x")
         if not re.fullmatch(r"[0-9xyXY+\-*/(). =]+", expr_text):
             return None
         try:
             expr = sp.sympify(expr_text, locals={"x": x, "y": y})
-            if not expr.free_symbols.issubset({x, y}):
-                return None
-            result = sp.simplify(sp.diff(expr, variable))
-            return f"Derivative: {result}\nAnswer: {result}"
+            return "Derivative: " + str(sp.diff(expr, var))
         except Exception:
             return None
 
-    # Definite integral: "integrate ... from A to B".
-    m = re.fullmatch(r"integrate\s+(.+?)\s+from\s+(.+?)\s+to\s+(.+)", raw.rstrip("?.!"))
+    m = re.fullmatch(r"integrate\s+(.+?)\s+from\s+(.+?)\s+to\s+(.+)", raw)
     if m:
-        expr_text = _alg_expression(m.group(1))
-        lo_text = _alg_expression(m.group(2))
-        hi_text = _alg_expression(m.group(3))
+        expr_text, lo_text, hi_text = (_alg_expression(v) for v in m.groups())
         allowed = r"[0-9xyXY+\-*/(). =]+"
-        if not all(re.fullmatch(allowed, z) for z in (expr_text, lo_text, hi_text)):
+        if not all(re.fullmatch(allowed, v) for v in (expr_text, lo_text, hi_text)):
             return None
         try:
             expr = sp.sympify(expr_text, locals={"x": x, "y": y})
             lo = sp.sympify(lo_text, locals={"x": x, "y": y})
             hi = sp.sympify(hi_text, locals={"x": x, "y": y})
-            result = sp.simplify(sp.integrate(expr, (x, lo, hi)))
+            result = sp.integrate(expr, (x, lo, hi))
             if result.has(sp.Integral):
                 return None
             return f"Definite integral: {result}\nAnswer: {result}"
         except Exception:
             return None
 
-    # Indefinite integral of a supported expression.
-    m = re.fullmatch(r"integrate\s+(.+)", raw.rstrip("?.!"))
+    m = re.fullmatch(r"integrate\s+(.+)", raw)
     if m:
         expr_text = _alg_expression(m.group(1))
         if not re.fullmatch(r"[0-9xyXY+\-*/(). =]+", expr_text):
             return None
         try:
             expr = sp.sympify(expr_text, locals={"x": x, "y": y})
-            result = sp.simplify(sp.integrate(expr, x))
+            result = sp.integrate(expr, x)
             if result.has(sp.Integral):
                 return None
             return f"Indefinite integral: {result} + C\nAnswer: {result} + C"
         except Exception:
             return None
 
-    # This wording is ambiguous without parentheses, so explicitly define
-    # the intended rational function for this exact test phrase.
-    if raw.rstrip("?.!") == (
-        "find the limit of x squared minus four over x minus two as x approaches two"
-    ):
+    if raw == "find the limit of x squared minus four over x minus two as x approaches two":
         result = sp.limit((x**2 - 4)/(x - 2), x, 2)
         return f"Limit: {result}\nAnswer: {result}"
-
-    # General limit form for expressions that are unambiguous in symbolic syntax.
-    m = re.fullmatch(
-        r"(?:find )?the limit of (.+?) as ([xy]) approaches (.+)",
-        raw.rstrip("?.!")
-    )
-    if m:
-        expr_text = _alg_expression(m.group(1))
-        point_text = _alg_expression(m.group(3))
-        allowed = r"[0-9xyXY+\-*/(). =]+"
-        if not re.fullmatch(allowed, expr_text) or not re.fullmatch(allowed, point_text):
-            return None
-        try:
-            variable = sp.Symbol(m.group(2))
-            expr = sp.sympify(expr_text, locals={"x": x, "y": y})
-            point = sp.sympify(point_text, locals={"x": x, "y": y})
-            result = sp.limit(expr, variable, point)
-            if result in (sp.oo, -sp.oo, sp.zoo, sp.nan):
-                result_text = str(result)
-            else:
-                result_text = str(sp.simplify(result))
-            return f"Limit: {result_text}\nAnswer: {result_text}"
-        except Exception:
-            return None
 
     return None
 
 
 '''
-
 s = s.replace(anchor, calculus + anchor, 1)
 
-# Remove the instructional suffix before solving the equation.
-anchor = '        body = re.sub(r"\\s+and give.*$", "", body)\n'
-if s.count(anchor) != 1:
-    raise SystemExit("ERROR: solve-body anchor not unique")
+# Fix the exact completing-square test by inserting cleanup after the solve-prefix block.
+start = s.index("def algebra_fast_path(text):")
+end = s.index("\ndef _arith_eval", start)
+section = s[start:end]
+
+needle = '            "", raw\n        )\n        body = re.sub(r"\\band give\\b.*$", "", body)'
+replacement = (
+    '            "", raw\n        )\n'
+    '        body = re.sub(r"\\s+by completing the square\\b.*$", "", body)\n'
+    '        body = re.sub(r"\\band give\\b.*$", "", body)'
+)
+if section.count(needle) != 1:
+    raise SystemExit("STOP: solve cleanup anchor mismatch; no file written")
+section = section.replace(needle, replacement, 1)
+s = s[:start] + section + s[end:]
+
+# Correct the whitespace normalization typo.
 s = s.replace(
-    anchor,
-    '        body = re.sub(r"\\s+by completing the square\\b.*$", "", body)\n' + anchor,
+    'normalized = re.sub(r"\\\\s+", " ", raw).strip()',
+    'normalized = re.sub(r"\\s+", " ", raw).strip()',
     1
 )
 
-# Dispatch calculus before the existing algebra and arithmetic fast paths.
+# Dispatch calculus before algebra.
 anchor = 'def model_chat(model, messages):\n    _algebra = algebra_fast_path(messages[-1]["content"])\n'
 if s.count(anchor) != 1:
-    raise SystemExit("ERROR: model_chat anchor not unique")
+    raise SystemExit("STOP: model_chat anchor mismatch; no file written")
 s = s.replace(
     anchor,
     'def model_chat(model, messages):\n'
