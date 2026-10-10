@@ -1,0 +1,306 @@
+Technical Whitepaper
+An Arithmetic-First, Resource-Aware Local Language Model Runtime
+
+Author: Christopher T. WIlliams
+License: GNU General Public License v3.0 (GPL-3.0-only), intended
+Platform: Android with a rooted device, Kali Linux chroot, and a local LLM runtime
+Status: Design and implementation whitepaper
+
+Abstract
+
+This whitepaper describes a resource-aware local language model system designed to provide useful natural-language interaction, mathematical computation, and persistent operational readiness on constrained hardware.
+
+The system combines a local language model with an arithmetic-first request router, deterministic symbolic mathematics, processor-aware workload management, controlled sleep states, and warm-state retention. Its central principle is that a language model should not be required to solve every problem through unconstrained text generation. When a request contains mathematical structure, the runtime should first identify that structure and determine whether a dedicated arithmetic or symbolic computation engine can solve it more reliably and efficiently.
+
+The proposed architecture is intended for Android devices running a Linux environment through a Kali chroot. It emphasizes local execution, reduced unnecessary computation, predictable resource consumption, and the ability to resume useful work without repeatedly initializing every component.
+
+The design distinguishes verified behaviors from proposed capabilities. Processor throttling, sleep-state transitions, and warm-state persistence require implementation and measurement before they can be considered operational guarantees.
+
+1. Design Objectives
+
+The system has six primary objectives:
+
+Arithmetic-first processing: Detect mathematical intent and attempt structured interpretation before general-purpose LLM generation.
+Deterministic computation: Use mathematical libraries or symbolic algorithms for supported operations rather than relying solely on generated answers.
+Processor-aware execution: Adapt workload scheduling to available CPU capacity, thermal conditions, and system responsiveness.
+Warm-state retention: Preserve reusable runtime resources when feasible, reducing repeated initialization overhead.
+Controlled sleep and wake behavior: Enter low-activity states during inactivity and resume processing when new work arrives.
+Local operation and recoverability: Keep the core workflow available without requiring remote inference services, while supporting configuration backup and restoration.
+2. System Architecture
+
+The system is organized into five logical layers.
+
+2.1 User Interface and Request Intake
+
+The input layer accepts natural-language requests, including arithmetic, differentiation, integration, limits, and general conversational prompts. It normalizes input and forwards the request to an intent classifier.
+
+2.2 Arithmetic-First Router
+
+The router examines the request for mathematical intent before invoking the general-purpose model. It identifies candidate expressions, operations, variables, domains, and constraints.
+
+Examples include:
+
+“Differentiate three x cubed plus two x squared minus five x plus seven.”
+“Integrate three x squared plus two x from zero to three.”
+“Find the limit of x cubed minus eight all over x minus two as x approaches two.”
+“Integrate x times the exponential of x squared.”
+
+The router should distinguish between a request that merely mentions mathematics and one that contains a well-formed mathematical task. If parsing is ambiguous, it should request clarification or use a constrained model-assisted interpretation stage.
+
+2.3 Computation Engine
+
+When the input can be translated into a supported mathematical representation, the computation engine performs the operation using deterministic methods.
+
+Supported operation classes may include:
+
+Arithmetic and expression simplification.
+Polynomial expansion and factorization.
+Symbolic differentiation.
+Indefinite and definite integration.
+Limits and continuity checks.
+Equation solving.
+Numeric evaluation with explicit precision and domain handling.
+
+The engine should return both the result and sufficient internal metadata to validate the result. For example, a differentiation result can be checked by differentiating the proposed antiderivative, while a definite integral can be checked against its bounds and evaluated expression.
+
+If the engine cannot solve the request safely or confidently, the runtime should not fabricate a result. It should use a fallback path or clearly report the limitation.
+
+2.4 Local Language Model
+
+The LLM handles general conversation, natural-language interpretation, explanations, and requests outside the deterministic engine's supported scope.
+
+The model may help translate natural language into a structured expression, but the computation engine should independently evaluate that expression. This separates linguistic interpretation from mathematical execution and reduces dependence on generated arithmetic.
+
+2.5 Runtime and Resource Manager
+
+The resource manager coordinates model loading, request queues, CPU scheduling, inactivity detection, sleep transitions, and warm-state policies. It should operate independently of the mathematical engine so that resource policies do not change the mathematical meaning of a request.
+
+3. Arithmetic-First Processing
+
+The principal processing rule is:
+
+Inspect for mathematical intent first; invoke the general-purpose language model only when needed.
+
+The proposed request flow is:
+
+Normalize the natural-language input.
+Detect mathematical operators, quantities, variables, and intent.
+Parse the request into a structured expression or operation.
+Validate syntax, variable scope, domains, and integration or limit bounds.
+Execute the operation through the computation engine.
+Validate the result where practical.
+Format the result in natural language.
+Invoke the LLM for explanation or fallback only when required.
+
+For example, the request “differentiate three x cubed plus two x squared minus five x plus seven” can be represented as:
+
+(f(x)=3x^3+2x^2-5x+7)
+
+The symbolic engine computes:
+
+(f'(x)=9x^2+4x-5)
+
+The model need not independently generate the derivative. It can instead explain the validated result.
+
+3.1 Implicit Multiplication
+
+Natural-language and mathematical parsers must recognize conventional implicit multiplication, including:
+
+(3x)
+(2x^2)
+(x(x+1))
+(x\exp(x^2))
+
+The parser must distinguish multiplication from function application and ambiguous variable names. Normalization should preserve expression meaning and must not silently rewrite an ambiguous input into a different calculation.
+
+3.2 Validation and Fallback
+
+Parsing success alone is not proof of correctness. The runtime should validate expression trees and operation-specific constraints before execution.
+
+If parsing fails, the system should try a limited recovery strategy, such as alternative tokenization or a constrained interpretation pass. It should not repeatedly invoke the LLM without a termination condition.
+
+The system should also preserve a clear distinction between exact symbolic results and approximate numerical results.
+
+4. Built-In Processor Throttler
+
+The proposed processor throttler regulates computational demand to preserve device responsiveness, manage energy consumption, and reduce thermal stress.
+
+The throttler should consider:
+
+CPU utilization and runnable workload.
+Request queue depth.
+Current inference and parsing activity.
+Available memory and swap pressure.
+Thermal status, when exposed by the operating system.
+User-visible latency requirements.
+Background versus foreground task priority.
+4.1 Throttling Policy
+
+The runtime can classify work into three priority levels:
+
+Interactive: User-facing requests that should complete promptly.
+
+Background: Nonurgent indexing, cache maintenance, and cleanup.
+
+Idle: Optional work that can wait until resources are available.
+
+When the device is under pressure, the runtime should defer background work before delaying an active interactive request. It may also reduce inference concurrency, cap the number of worker processes, or lower the priority of background computation.
+
+CPU affinity or frequency controls should be used only where supported and authorized by the device. The system must not assume that a rooted Android device exposes every Linux CPU-frequency interface.
+
+4.2 Thermal Safety
+
+Thermal management should favor operating-system and device-firmware protections. The application-level throttler is a supplementary policy layer, not a replacement for hardware thermal safeguards.
+
+The implementation should record throttling events and compare them with latency, temperature, and energy measurements where those measurements are available.
+
+5. Sleep-State Management
+
+The runtime should support defined operating states rather than treating inactivity as an undefined condition.
+
+5.1 Active State
+
+The system is processing requests. Required model resources and computation components remain available.
+
+5.2 Warm Idle State
+
+No request is currently being processed, but selected resources remain resident where feasible. The objective is to reduce the latency of the next request without allowing indefinite resource consumption.
+
+5.3 Sleep State
+
+After a configurable idle interval, the runtime may reduce background activity, stop optional maintenance tasks, and release resources that are expensive to retain.
+
+Sleep does not necessarily mean that the operating system suspends the device. It describes an application-level low-activity policy unless an explicitly supported operating-system power mechanism is used.
+
+5.4 Wake and Recovery State
+
+On new input, the runtime restores any released components, verifies that the model service is available, and resumes request processing. If a resource has been evicted or the service has restarted, the system should perform a controlled reload and report failures rather than entering an endless restart loop.
+
+6. Warm-State Retention
+
+Warm-state retention is intended to reduce repeated initialization and improve response consistency.
+
+Potentially reusable resources include:
+
+A running model server.
+Loaded model weights, if the inference runtime keeps them resident.
+Tokenizer and vocabulary data.
+Parser initialization and compiled expression rules.
+Frequently used mathematical functions or cached intermediate results.
+Runtime configuration and service connection state.
+
+Warm-state retention is not equivalent to preserving all model memory indefinitely. Android may terminate background processes, reclaim memory, or restart services. The implementation must tolerate those events.
+
+6.1 Retention Policy
+
+A retention controller should balance startup latency against memory use. A practical policy can keep the service warm for a configurable interval after the last request, then move into warm idle or sleep.
+
+The controller should measure whether retaining a component actually improves startup time. Large model weights should not be duplicated in memory merely to preserve a warm state.
+
+6.2 Cache Correctness
+
+Any arithmetic cache must use a key that represents the normalized expression, operation, variable, bounds, precision, and relevant assumptions. Results must not be reused across incompatible domains or numerical precision settings.
+
+Persistent caches should be bounded and invalidated when parser rules, computation libraries, or model configurations change.
+
+7. Android and Kali Chroot Deployment
+
+The target deployment uses a rooted Android device and a Kali Linux chroot rooted at:
+
+/data/local/nhsystem/kali-arm64
+
+The host-side ADB connection provides a management path for transferring scripts, executing commands with root privileges, and backing up configuration files.
+
+The deployment design should separate:
+
+Android-level service and storage management.
+Chroot initialization and filesystem access.
+LLM executable and model-server configuration.
+Arithmetic parser and computation engine.
+Resource-management and state-transition logic.
+Backup, validation, and restoration tools.
+
+Paths must be discovered and verified on the target system. A directory that exists on Android does not necessarily exist at the corresponding path inside the chroot.
+
+The packaging process should include a file inventory, checksums, version information, and license documentation. Archives must be tested by listing their contents and verifying checksums before being treated as valid backups.
+
+A complete deployment archive should distinguish configuration and executable files from model weights, caches, logs, and transient runtime state. Model weights can dominate archive size and may be subject to separate distribution terms.
+
+8. Reliability and Failure Handling
+
+The runtime should provide explicit behavior for the following failure classes:
+
+Mathematical input cannot be parsed.
+The computation engine does not support an operation.
+The LLM service is unavailable.
+A model is evicted or cannot be loaded.
+Memory pressure prevents execution.
+The throttler defers work.
+Sleep or wake transitions fail.
+The filesystem is full or a backup archive is incomplete.
+
+Failures should be bounded, logged, and recoverable where possible. A failed arithmetic parse should not cause an infinite inference loop. A failed model startup should not prevent deterministic arithmetic operations from working if the computation engine remains available.
+
+9. Security and Privacy
+
+Local inference can reduce the need to transmit prompts to an external inference provider, but local execution alone does not guarantee privacy. Logs, backups, model-server endpoints, and other applications on the device must be considered.
+
+The implementation should:
+
+Bind model-server interfaces to local addresses unless remote access is explicitly required.
+Avoid storing sensitive prompts unnecessarily.
+Protect configuration files and backups with appropriate filesystem permissions.
+Verify downloaded files and package integrity.
+Avoid embedding credentials in scripts or archives.
+Keep privileged commands narrowly scoped.
+Record which components execute with root privileges.
+
+Root access increases the consequences of implementation errors. The runtime should avoid using root for ordinary parsing, model inference, and arithmetic operations when lower privileges are sufficient.
+
+10. Testing and Evaluation
+
+The system should be evaluated against reproducible workloads rather than relying on anecdotal response quality.
+
+10.1 Arithmetic Correctness
+
+Test representative cases for differentiation, integration, limits, implicit multiplication, malformed expressions, and ambiguous natural-language requests. Compare symbolic outputs against independent reference calculations or mathematical identities.
+
+10.2 Latency
+
+Measure:
+
+Request-to-result latency.
+Cold-start model initialization time.
+Warm-state response latency.
+Wake-from-sleep latency.
+Arithmetic routing and parsing overhead.
+
+Report median and tail latency rather than a single best-case measurement.
+
+10.3 Resource Consumption
+
+Measure memory use, CPU time, background activity, and energy consumption where suitable instrumentation is available. Test under both normal and memory-constrained conditions.
+
+10.4 State-Transition Reliability
+
+Run repeated active-to-idle-to-sleep-to-wake cycles. Verify that requests are not lost, model resources are correctly restored, and the system does not remain stuck in a stale state.
+
+10.5 Backup Integrity
+
+After creating an archive, validate its format, list its contents, verify checksums, and perform a restoration test in a separate directory or environment. A successful archive command alone is not sufficient evidence of a valid backup.
+
+11. Conclusion
+
+This design combines deterministic mathematical computation with local language-model capabilities and resource-aware runtime management. Its defining architectural choice is to identify and solve supported mathematical tasks before relying on general-purpose text generation.
+
+The processor throttler, sleep-state manager, and warm-state retention controller provide a framework for balancing responsiveness, resource use, and startup latency on constrained Android hardware. Their value must be demonstrated through implementation-specific tests and measurements.
+
+The result is intended to be a local, modular, recoverable runtime that uses the language model where it adds value and relies on structured computation where correctness and reproducibility are more important than free-form generation.
+
+Licensing and Attribution
+
+Copyright © Christopher T. WIlliams.
+
+The intended license for original project material is the GNU General Public License, version 3 only (GPL-3.0-only). A release must include the complete GPLv3 license text and appropriate license notices.
+
+This declaration does not automatically relicense third-party models, libraries, scripts, or other incorporated works. Their original licenses and redistribution conditions must be reviewed separately before distributing a complete archive.
