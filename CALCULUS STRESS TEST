@@ -427,3 +427,85 @@ Timing note: Start_ns and End_ns are timestamps, not elapsed time. To calculate 
 . A returned symbolic answer does not by itself prove that the fast path handled it; the output and timing should be considered together.
 
 Run Test 1 first. It targets the known exponential-power bug, which should be corrected before trusting the harder tests.
+
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate exp of x squared\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: 2*exp(2*x)
+Answer: 2*exp(2*x)
+>
+Exit:0
+Start_ns:1791649150771108142 End_ns:1791649154155775716
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate sine of the quantity x cubed plus two x\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> d(sin(x^3 + 2x)) = 3x^2(x^3 + 2x)' + (x^3 + 2x)'(x^3 + 2x)' = 3x^2(3x^2) + (x^3 + 2x)(3x^2 + 2) = 9x^4 + 3x^3(x^3 + 2x) + 6x(x^3 + 2x) + 4x(x^3 + 2x)' = 9x^4 + 3x^6 + 6x^4 +Exit:124
+Start_ns:1791649158054300675 End_ns:1791649218084515324
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate natural log of the quantity x squared plus one\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: 2*x/(x**2 + 1)
+Answer: 2*x/(x**2 + 1)
+>
+Exit:0
+Start_ns:1791649226563158010 End_ns:1791649227766300702
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate x squared times sine of x\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: x**2*cos(x) + 2*x*sin(x)
+Answer: x**2*cos(x) + 2*x*sin(x)
+>
+Exit:0
+Start_ns:1791649233629605390 End_ns:1791649237458764195
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate x squared plus one all over x minus one\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: 2*x/(x - 1) - (x**2 + 1)/(x - 1)**2
+Answer: 2*x/(x - 1) - (x**2 + 1)/(x - 1)**2
+>
+Exit:0
+Start_ns:1791649242006028884 End_ns:1791649245182072074
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate sine of x times cosine of x\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: -sin(x)**2 + cos(x)**2
+Answer: -sin(x)**2 + cos(x)**2
+>
+Exit:0
+Start_ns:1791649250236438570 End_ns:1791649253485737030
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate exp of the quantity x squared plus three x\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> The expression "^@exp of the quantity x squared plus three x" is not a standard mathematical expression, and without additional context, I can't provide a differentiation. If you meant to differentiate a specific function or expression, please provide the function or expression, and I'll be happy to help.
+>
+Exit:0
+Start_ns:1791649257666666180 End_ns:1791649286800707852
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate sine of x times cosine of x\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+^@MEDIUM LLM: qwen2.5:1.5b
+> Derivative: -sin(x)**2 + cos(x)**2
+Answer: -sin(x)**2 + cos(x)**2
+>
+Exit:0
+Start_ns:1791649353713276189 End_ns:1791649356714450763
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate exp of the quantity x squared plus three x\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> exponent: (x^2 + 3x)^2 = x^4 + 6x^3 + 9x^2
+Answer: x^4 + 6x^3 + 9x^2
+>
+Exit:0
+Start_ns:1791649360243016953 End_ns:1791649383793492283
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'integrate x times exp of x squared\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Indefinite integral: (2*x - 1)*exp(2*x)/4 + C
+Answer: (2*x - 1)*exp(2*x)/4 + C
+>
+Exit:0
+Start_ns:1791649388940820125 End_ns:1791649392661848661
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'find the limit of x squared minus nine all over x minus three as x approaches three\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Limit: 6
+Answer: 6
+>
+Exit:0
+Start_ns:1791649396673921312 End_ns:1791649400246889925
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'integrate three x squared plus two x from zero to three\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> ^@∫(3x^2 + 2x) dx from 0 to 3 = [x^3 + x^2] from 0 to 3 = (3^3 + 3^2) - (0^3 + 0^2) = 27 + 9 = 36
+Answer: 36
+>
+Exit:0
+Start_ns:1791649404277804960 End_ns:1791649440853608549
+root@flex:~#
