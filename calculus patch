@@ -513,3 +513,104 @@ python3 -m py_compile /tmp/llm.new
 
 adb push /tmp/llm.new /data/local/tmp/llm.new &&
 adb shell "su -c 'cp /data/local/tmp/llm.new /data/local/nhsystem/kali-arm64/usr/local/bin/llm.new && chmod 755 /data/local/nhsystem/kali-arm64/usr/local/bin/llm.new && chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin python3 -m py_compile /usr/local/bin/llm.new'"
+
+
+
+cp /tmp/llm.new "/tmp/llm.new.pre-translator-fix-$(date +%Y%m%d-%H%M%S)" &&
+cat > /tmp/replace_calc_expression.py <<'PY'
+from pathlib import Path
+import ast
+
+p = Path("/tmp/llm.new")
+s = p.read_text()
+start = s.index("def _calc_expression(text):")
+end = s.index("\ndef _calc_sympify(", start)
+
+new = r'''
+def _calc_expression(text):
+    """Translate restricted natural-language math into a SymPy expression."""
+    import re
+
+    t = re.sub(r"\s+", " ", text.strip().lower())
+    t = re.sub(r"^(?:the expression|the function)\s+", "", t).strip()
+
+    funcs = {
+        "natural log": "log", "logarithm": "log", "sine": "sin",
+        "cosine": "cos", "tangent": "tan", "exponential": "exp",
+        "sin": "sin", "cos": "cos", "tan": "tan",
+        "ln": "log", "log": "log", "exp": "exp",
+    }
+
+    # Peel off a function applied to an explicitly grouped quantity.
+    m = re.fullmatch(
+        r"(natural log|logarithm|sine|cosine|tangent|exponential|"
+        r"sin|cos|tan|ln|log|exp)\s+of\s+the quantity\s+(.+)", t
+    )
+    if m:
+        fn = funcs[m.group(1)]
+        inner = _calc_expression(m.group(2))
+        return None if inner is None else f"{fn}({inner})"
+
+    # Handle function of a powered variable before matching "function of x".
+    m = re.fullmatch(
+        r"(natural log|logarithm|sine|cosine|tangent|exponential|"
+        r"sin|cos|tan|ln|log|exp)\s+of\s+([xy])\s+(squared|cubed)", t
+    )
+    if m:
+        fn, var, power = funcs[m.group(1)], m.group(2), m.group(3)
+        exponent = "2" if power == "squared" else "3"
+        return f"{fn}({var}**{exponent})"
+
+    # Handle "A all over B" as a fully grouped fraction.
+    if " all over " in t:
+        numerator, denominator = t.split(" all over ", 1)
+        a = _calc_expression(numerator)
+        b = _calc_expression(denominator)
+        return None if a is None or b is None else f"(({a})/({b}))"
+
+    # Translate named functions with a simple variable or numeric argument.
+    for phrase, fn in sorted(funcs.items(), key=lambda item: -len(item[0])):
+        t = re.sub(
+            rf"\b{re.escape(phrase)}\s+of\s+([xy])\b",
+            lambda m, f=fn: f"{f}({m.group(1)})", t
+        )
+        t = re.sub(
+            rf"\b{re.escape(phrase)}\s+of\s+(\d+(?:\.\d+)?)\b",
+            lambda m, f=fn: f"{f}({m.group(1)})", t
+        )
+
+    # Translate number words, powers and arithmetic operators.
+    t = _alg_numbers(t)
+    t = re.sub(r"\braised to the power of\b|\bto the power of\b", "**", t)
+    t = re.sub(r"\bsquared\b", "**2", t)
+    t = re.sub(r"\bcubed\b", "**3", t)
+    t = re.sub(r"\bmultiplied by\b|\btimes\b", "*", t)
+    t = re.sub(r"\bdivided by\b", "/", t)
+    t = re.sub(r"\bplus\b", "+", t)
+    t = re.sub(r"\bminus\b", "-", t)
+    t = re.sub(r"\bpi\b", "pi", t)
+    t = re.sub(r"\be\b", "E", t)
+
+    # Make implicit multiplication explicit: 3x, 2 x, x sin(x), etc.
+    t = re.sub(r"(?<=\d)\s+(?=[xy]\b)", "*", t)
+    t = re.sub(r"\b([xy])\s+(?=[xy]\b)", r"\1*", t)
+    t = re.sub(r"(?<=\))\s*(?=[xy(])", "*", t)
+    t = re.sub(r"(?<=[xy])\s+(?=[A-Za-z_])", "*", t)
+    t = re.sub(r"\s+", " ", t).strip()
+
+    if not re.fullmatch(r"[0-9A-Za-z_+\-*/(). ]+", t):
+        return None
+    names = set(re.findall(r"[A-Za-z_][A-Za-z_0-9]*", t))
+    allowed = {"x", "y", "pi", "E", "sin", "cos", "tan", "log", "exp", "sqrt"}
+    if not names.issubset(allowed):
+        return None
+    return t
+'''
+
+s = s[:start] + new + s[end:]
+ast.parse(s)
+p.write_text(s)
+print("Replaced _calc_expression; syntax is valid.")
+PY
+python3 /tmp/replace_calc_expression.py &&
+python3 -m py_compile /tmp/llm.new
