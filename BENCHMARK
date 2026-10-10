@@ -1,0 +1,1112 @@
+root@flex:/data/sda4/BACKUPLLM# python3 /data/sda4/STRESSTEST1.py
+
+what is 847 times 693
+MEDIUM LLM: qwen2.5:1.5b
+> 847 * 693 = 586971
+Answer: 586971
+>
+Exit:0
+Start_ns:1791665345677112796 End_ns:1791665349356321793
+
+what is 1847 times 936 divided by 24
+MEDIUM LLM: qwen2.5:1.5b
+> 1847 * 936 / 24 = 72033
+Answer: 72033
+>
+Exit:0
+Start_ns:1791665349521577216 End_ns:1791665353190138791
+
+what is 7284 times 365 divided by 15 plus 1847 minus 629
+MEDIUM LLM: qwen2.5:1.5b
+> 7284 * 365 / 15 + 1847 - 629 = 178462
+Answer: 178462
+>
+Exit:0
+Start_ns:1791665353345725137 End_ns:1791665357021772788
+
+what is 9635 times 728 divided by 16 plus 28479 minus 7364
+MEDIUM LLM: qwen2.5:1.5b
+> 9635 * 728 / 16 + 28479 - 7364 = 459507.5
+Answer: 459507.5
+>
+Exit:0
+Start_ns:1791665357182190673 End_ns:1791665360862534824
+
+what is 8736 times 245 divided by 12 plus 38765 minus 9284 times 3
+MEDIUM LLM: qwen2.5:1.5b
+> 8736 * 245 / 12 + 38765 - 9284 * 3 = 189273
+Answer: 189273
+>
+Exit:0
+Start_ns:1791665361017815439 End_ns:1791665364674893436
+
+what is 15432 times 315 divided by 18 plus 67248 divided by 24 minus 5837 times 7
+MEDIUM LLM: qwen2.5:1.5b
+> 15432 * 315 / 18 + 67248 / 24 - 5837 * 7 = 232003
+Answer: 232003
+>
+Exit:0
+Start_ns:1791665364831111705 End_ns:1791665368506551934
+
+what is 15432 times 315 divided by 18 plus 67248 divided by 24 minus 5837 times 7
+MEDIUM LLM: qwen2.5:1.5b
+> 15432 * 315 / 18 + 67248 / 24 - 5837 * 7 = 232003
+Answer: 232003
+>
+Exit:0
+Start_ns:1791665368671931587 End_ns:1791665372348785585
+
+what is 2468 times 135 divided by 9 plus 7284 minus 5617
+MEDIUM LLM: qwen2.5:1.5b
+> 2468 * 135 / 9 + 7284 - 5617 = 38687
+Answer: 38687
+>
+Exit:0
+Start_ns:1791665372513841008 End_ns:1791665376192381467
+
+what is 5832 times 245 divided by 12 plus 7644 times 36 divided by 8 minus 19275
+MEDIUM LLM: qwen2.5:1.5b
+> 5832 * 245 / 12 + 7644 * 36 / 8 - 19275 = 134193
+Answer: 134193
+>
+Exit:0
+Start_ns:1791665376359373620 End_ns:1791665379997833887
+
+what is 18756 times 324 divided by 18 plus 94560 divided by 24 minus 6837 times 11 plus 42719
+MEDIUM LLM: qwen2.5:1.5b
+> 18756 * 324 / 18 + 94560 / 24 - 6837 * 11 + 42719 = 309060
+Answer: 309060
+>
+Exit:0
+Start_ns:1791665380152674079 End_ns:1791665383836696769
+
+what is 28476 times 735 divided by 21 plus 156384 divided by 16 minus 9472 times 23 plus 68325 times 14 divided by 7
+MEDIUM LLM: qwen2.5:1.5b
+> 28476 * 735 / 21 + 156384 / 16 - 9472 * 23 + 68325 * 14 / 7 = 925228
+Answer: 925228
+>
+Exit:0
+Start_ns:1791665383993856538 End_ns:1791665387680127689
+
+what is 18360 times 252 divided by 15 plus 48726 minus 936 times 27
+MEDIUM LLM: qwen2.5:1.5b
+> 18360 * 252 / 15 + 48726 - 936 * 27 = 331902
+Answer: 331902
+>
+Exit:0
+Start_ns:1791665387842292535 End_ns:1791665391510192302
+
+what is 27648 times 385 divided by 24 plus 15876 times 144 divided by 18 minus 74625
+MEDIUM LLM: qwen2.5:1.5b
+> 27648 * 385 / 24 + 15876 * 144 / 18 - 74625 = 495903
+Answer: 495903
+>
+Exit:0
+Start_ns:1791665391661845071 End_ns:1791665395284916414
+
+what is 38475 times 672 divided by 28 plus 247680 divided by 32 minus 15864 times 19 plus 73521 times 12 divided by 6
+MEDIUM LLM: qwen2.5:1.5b
+> 38475 * 672 / 28 + 247680 / 32 - 15864 * 19 + 73521 * 12 / 6 = 776766
+Answer: 776766
+>
+Exit:0
+Start_ns:1791665395441093607 End_ns:1791665399113936412
+
+what is 67284 times 945 divided by 35 plus 483840 divided by 28 minus 27456 times 32 plus 186375 times 24 divided by 15
+MEDIUM LLM: qwen2.5:1.5b
+> 67284 * 945 / 35 + 483840 / 28 - 27456 * 32 + 186375 * 24 / 15 = 1253556
+Answer: 1253556
+>
+Exit:0
+Start_ns:1791665399274020181 End_ns:1791665402929079947
+
+factor x squared minus five x plus six
+MEDIUM LLM: qwen2.5:1.5b
+> Factored form: (x - 3)*(x - 2)
+Answer: (x - 3)*(x - 2)
+>
+Exit:0
+Start_ns:1791665403085832178 End_ns:1791665407212960983
+
+factor x squared plus seven x plus twelve
+MEDIUM LLM: qwen2.5:1.5b
+> Factored form: (x + 3)*(x + 4)
+Answer: (x + 3)*(x + 4)
+>
+Exit:0
+Start_ns:1791665407371997675 End_ns:1791665411426241095
+
+factor four x squared minus twenty five
+MEDIUM LLM: qwen2.5:1.5b
+> Factored form: (2*x - 5)*(2*x + 5)
+Answer: (2*x - 5)*(2*x + 5)
+>
+Exit:0
+Start_ns:1791665411583834711 End_ns:1791665415654328938
+
+solve x squared minus five x plus six equals zero
+MEDIUM LLM: qwen2.5:1.5b
+> Solutions: x = 2; x = 3
+Answer: x = 2; x = 3
+>
+Exit:0
+Start_ns:1791665415815602631 End_ns:1791665420097427935
+
+solve two x squared plus seven x plus three equals zero
+MEDIUM LLM: qwen2.5:1.5b
+> Solutions: x = -3; x = -1/2
+Answer: x = -3; x = -1/2
+>
+Exit:0
+Start_ns:1791665420262115243 End_ns:1791665424509246432
+
+solve x squared plus six x minus seven equals zero by completing the square
+MEDIUM LLM: qwen2.5:1.5b
+> Solutions: x = -7; x = 1
+Answer: x = -7; x = 1
+>
+Exit:0
+Start_ns:1791665424661939778 End_ns:1791665428925984390
+
+solve square root of two x plus three equals x
+MEDIUM LLM: qwen2.5:1.5b
+> Solution: x = 3\nAnswer: x = 3
+>
+Exit:0
+Start_ns:1791665429078366544 End_ns:1791665433463698579
+
+solve one over x minus one plus one over x plus one equals one
+MEDIUM LLM: qwen2.5:1.5b
+> Solution: x = 1 - sqrt(2), x = 1 + sqrt(2) (with x != -1, 1)\nAnswer: x = 1 - sqrt(2), x = 1 + sqrt(2)
+>
+Exit:0
+Start_ns:1791665433618529041 End_ns:1791665438180284461
+
+solve two raised to the power of x equals thirty two
+MEDIUM LLM: qwen2.5:1.5b
+> Solution: x = 5
+Answer: x = 5
+>
+Exit:0
+Start_ns:1791665438334720961 End_ns:1791665442900968919
+
+solve log base two of x plus log base two of x minus two equals three
+MEDIUM LLM: qwen2.5:1.5b
+> Solution: x = 4 (domain x > 2)\nAnswer: x = 4
+>
+Exit:0
+Start_ns:1791665443060503188 End_ns:1791665447564956377
+
+solve the system y equals x squared and y equals two x plus three
+MEDIUM LLM: qwen2.5:1.5b
+> Solutions: x = -1, y = 1; x = 3, y = 9
+Answer: x = -1, y = 1; x = 3, y = 9
+>
+Exit:0
+Start_ns:1791665447723818569 End_ns:1791665452073684182
+
+factor x squared plus seven x plus twelve
+MEDIUM LLM: qwen2.5:1.5b
+> Factored form: (x + 3)*(x + 4)
+Answer: (x + 3)*(x + 4)
+>
+Exit:0
+Start_ns:1791665452231435489 End_ns:1791665455736156602
+
+factor four x squared minus twenty five
+MEDIUM LLM: qwen2.5:1.5b
+> Factored form: (2*x - 5)*(2*x + 5)
+Answer: (2*x - 5)*(2*x + 5)
+>
+Exit:0
+Start_ns:1791665455788540256 End_ns:1791665459517575869
+
+factor four x squared minus twenty five
+MEDIUM LLM: qwen2.5:1.5b
+> Factored form: (2*x - 5)*(2*x + 5)
+Answer: (2*x - 5)*(2*x + 5)
+>
+Exit:0
+Start_ns:1791665459680040522 End_ns:1791665463118886597
+
+solve x squared minus five x plus six equals zero
+MEDIUM LLM: qwen2.5:1.5b
+> Solutions: x = 2; x = 3
+Answer: x = 2; x = 3
+>
+Exit:0
+Start_ns:1791665463175020058 End_ns:1791665467140496171
+
+solve x squared minus five x plus six equals zero
+MEDIUM LLM: qwen2.5:1.5b
+> Solutions: x = 2; x = 3
+Answer: x = 2; x = 3
+>
+Exit:0
+Start_ns:1791665467294491325 End_ns:1791665471531861783
+
+solve two x squared plus seven x plus three equals zero
+MEDIUM LLM: qwen2.5:1.5b
+> Solutions: x = -3; x = -1/2
+Answer: x = -3; x = -1/2
+>
+Exit:0
+Start_ns:1791665471691208168 End_ns:1791665475942113818
+
+solve x squared plus six x minus seven equals zero by completing the square
+MEDIUM LLM: qwen2.5:1.5b
+> Solutions: x = -7; x = 1
+Answer: x = -7; x = 1
+>
+Exit:0
+Start_ns:1791665476118966126 End_ns:1791665480325102084
+
+solve x squared plus six x minus seven equals zero by completing the square
+MEDIUM LLM: qwen2.5:1.5b
+> Solutions: x = -7; x = 1
+Answer: x = -7; x = 1
+>
+Exit:0
+Start_ns:1791665480502692892 End_ns:1791665484771714235
+
+solve square root of two x plus three equals x
+MEDIUM LLM: qwen2.5:1.5b
+> Solution: x = 3\nAnswer: x = 3
+>
+Exit:0
+Start_ns:1791665484931301850 End_ns:1791665489350133886
+
+solve one over x minus one plus one over x plus one equals one
+MEDIUM LLM: qwen2.5:1.5b
+> Solution: x = 1 - sqrt(2), x = 1 + sqrt(2) (with x != -1, 1)\nAnswer: x = 1 - sqrt(2), x = 1 + sqrt(2)
+>
+Exit:0
+Start_ns:1791665489507618501 End_ns:1791665493946449805
+
+solve two raised to the power of x equals thirty two
+MEDIUM LLM: qwen2.5:1.5b
+> Solution: x = 5
+Answer: x = 5
+>
+Exit:0
+Start_ns:1791665494103727036 End_ns:1791665498739904533
+
+solve log base two of x plus log base two of x minus two equals three
+MEDIUM LLM: qwen2.5:1.5b
+> Solution: x = 4 (domain x > 2)\nAnswer: x = 4
+>
+Exit:0
+Start_ns:1791665498891998417 End_ns:1791665503443144299
+
+solve the system y equals x squared and y equals two x plus three
+MEDIUM LLM: qwen2.5:1.5b
+> Solutions: x = -1, y = 1; x = 3, y = 9
+Answer: x = -1, y = 1; x = 3, y = 9
+>
+Exit:0
+Start_ns:1791665503601753145 End_ns:1791665507923153565
+
+solve x squared minus five x plus six equals zero
+MEDIUM LLM: qwen2.5:1.5b
+> Solutions: x = 2; x = 3
+Answer: x = 2; x = 3
+>
+Exit:0
+Start_ns:1791665508080400872 End_ns:1791665512360979677
+
+solve two x squared plus seven x plus three equals zero
+MEDIUM LLM: qwen2.5:1.5b
+> Solutions: x = -3; x = -1/2
+Answer: x = -3; x = -1/2
+>
+Exit:0
+Start_ns:1791665512513959484 End_ns:1791665516758093981
+
+solve x squared plus six x minus seven equals zero by completing the square
+MEDIUM LLM: qwen2.5:1.5b
+> Solutions: x = -7; x = 1
+Answer: x = -7; x = 1
+>
+Exit:0
+Start_ns:1791665516913807327 End_ns:1791665521247045363
+
+solve the system y equals x squared and y equals two x plus three
+MEDIUM LLM: qwen2.5:1.5b
+> Solutions: x = -1, y = 1; x = 3, y = 9
+Answer: x = -1, y = 1; x = 3, y = 9
+>
+Exit:0
+Start_ns:1791665521418264017 End_ns:1791665525760300744
+
+solve two raised to the power of x equals thirty two
+MEDIUM LLM: qwen2.5:1.5b
+> Solution: x = 5
+Answer: x = 5
+>
+Exit:0
+Start_ns:1791665525919089590 End_ns:1791665530601077164
+
+solve square root of two x plus three equals x
+MEDIUM LLM: qwen2.5:1.5b
+> Solution: x = 3\nAnswer: x = 3
+>
+Exit:0
+Start_ns:1791665530763827625 End_ns:1791665535156604968
+
+solve one over x minus one plus one over x plus one equals one
+MEDIUM LLM: qwen2.5:1.5b
+> Solution: x = 1 - sqrt(2), x = 1 + sqrt(2) (with x != -1, 1)\nAnswer: x = 1 - sqrt(2), x = 1 + sqrt(2)
+>
+Exit:0
+Start_ns:1791665535312699660 End_ns:1791665539834595696
+
+solve log base two of x plus log base two of x minus two equals three
+MEDIUM LLM: qwen2.5:1.5b
+> Solution: x = 4 (domain x > 2)\nAnswer: x = 4
+>
+Exit:0
+Start_ns:1791665539992144234 End_ns:1791665544487066308
+
+solve one divided by x minus one divided by quantity x plus one equals one
+MEDIUM LLM: qwen2.5:1.5b
+> Solutions: x = -1/2 + sqrt(5)/2, x = -sqrt(5)/2 - 1/2 (x != 0, -1)
+Answer: x = -1/2 + sqrt(5)/2, x = -sqrt(5)/2 - 1/2
+>
+Exit:0
+Start_ns:1791665544661473846 End_ns:1791665549149552266
+
+solve x squared minus five x plus six equals zero
+MEDIUM LLM: qwen2.5:1.5b
+> Solutions: x = 2; x = 3
+Answer: x = 2; x = 3
+>
+Exit:0
+Start_ns:1791665549303959612 End_ns:1791665553488843840
+
+solve two x squared plus seven x plus three equals zero
+MEDIUM LLM: qwen2.5:1.5b
+> Solutions: x = -3; x = -1/2
+Answer: x = -3; x = -1/2
+>
+Exit:0
+Start_ns:1791665553653240763 End_ns:1791665557898434029
+
+solve x squared plus six x minus seven equals zero by completing the square
+MEDIUM LLM: qwen2.5:1.5b
+> Solutions: x = -7; x = 1
+Answer: x = -7; x = 1
+>
+Exit:0
+Start_ns:1791665558058732490 End_ns:1791665562287590449
+
+solve the system y equals x squared and y equals two x plus three
+MEDIUM LLM: qwen2.5:1.5b
+> Solutions: x = -1, y = 1; x = 3, y = 9
+Answer: x = -1, y = 1; x = 3, y = 9
+>
+Exit:0
+Start_ns:1791665562451646910 End_ns:1791665566783620792
+
+solve two raised to the power of x equals thirty two
+MEDIUM LLM: qwen2.5:1.5b
+> Solution: x = 5
+Answer: x = 5
+>
+Exit:0
+Start_ns:1791665566936687792 End_ns:1791665571581992173
+
+solve square root of two x plus three equals x
+MEDIUM LLM: qwen2.5:1.5b
+> Solution: x = 3\nAnswer: x = 3
+>
+Exit:0
+Start_ns:1791665571735653711 End_ns:1791665576114973016
+
+solve one over x minus one plus one over x plus one equals one
+MEDIUM LLM: qwen2.5:1.5b
+> Solution: x = 1 - sqrt(2), x = 1 + sqrt(2) (with x != -1, 1)\nAnswer: x = 1 - sqrt(2), x = 1 + sqrt(2)
+>
+Exit:0
+Start_ns:1791665576272028747 End_ns:1791665580791423397
+
+solve log base two of x plus log base two of x minus two equals three
+MEDIUM LLM: qwen2.5:1.5b
+> Solution: x = 4 (domain x > 2)\nAnswer: x = 4
+>
+Exit:0
+Start_ns:1791665580953866859 End_ns:1791665585478461932
+
+solve one divided by x minus one divided by quantity x plus one equals one
+MEDIUM LLM: qwen2.5:1.5b
+> Solutions: x = -1/2 + sqrt(5)/2, x = -sqrt(5)/2 - 1/2 (x != 0, -1)
+Answer: x = -1/2 + sqrt(5)/2, x = -sqrt(5)/2 - 1/2
+>
+Exit:0
+Start_ns:1791665585636699278 End_ns:1791665590175244660
+
+solve the system x squared plus y squared equals twenty five and y equals x minus one
+MEDIUM LLM: qwen2.5:1.5b
+> Solutions: x = -3, y = -4; x = 4, y = 3
+Answer: x = -3, y = -4; x = 4, y = 3
+>
+Exit:0
+Start_ns:1791665590331634775 End_ns:1791665594682469387
+
+find the limit of x squared minus four over x minus two as x approaches two
+MEDIUM LLM: qwen2.5:1.5b
+> Exit:124
+Start_ns:1791665594842002541 End_ns:1791665609873088684
+
+solve one divided by x minus one divided by quantity x plus one equals one
+MEDIUM LLM: qwen2.5:1.5b
+> Solutions: x = -1/2 + sqrt(5)/2, x = -sqrt(5)/2 - 1/2 (x != 0, -1)
+Answer: x = -1/2 + sqrt(5)/2, x = -sqrt(5)/2 - 1/2
+>
+Exit:0
+Start_ns:1791665609953751222 End_ns:1791665611991541029
+
+differentiate sine of x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: cos(x)
+Answer: cos(x)
+>
+Exit:0
+Start_ns:1791665612066409567 End_ns:1791665615760731180
+
+integrate three x squared plus two x
+MEDIUM LLM: qwen2.5:1.5b
+> Indefinite integral: x**3 + x**2 + C
+Answer: x**3 + x**2 + C
+>
+Exit:0
+Start_ns:1791665615921774718 End_ns:1791665620384786907
+
+integrate x squared from zero to three
+MEDIUM LLM: qwen2.5:1.5b
+> Definite integral: 9
+Answer: 9
+>
+Exit:0
+Start_ns:1791665620541990446 End_ns:1791665624250577674
+
+find the limit of x squared minus four over x minus two as x approaches two
+MEDIUM LLM: qwen2.5:1.5b
+> Exit:124
+Start_ns:1791665624343954404 End_ns:1791665639367247432
+
+what is 1847 times 936 divided by 24
+MEDIUM LLM: qwen2.5:1.5b
+> 1847 * 936 / 24 = 72033
+Answer: 72033
+>
+Exit:0
+Start_ns:1791665639451157663 End_ns:1791665642446095815
+
+differentiate sine of x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: cos(x)
+Answer: cos(x)
+>
+Exit:0
+Start_ns:1791665642587317815 End_ns:1791665646339829389
+
+differentiate sine of x squared
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: 2*x*cos(x**2)
+Answer: 2*x*cos(x**2)
+>
+Exit:0
+Start_ns:1791665646498975004 End_ns:1791665649998869809
+
+differentiate cosine of x plus tangent of x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: -sin(x) + tan(x)**2 + 1
+Answer: -sin(x) + tan(x)**2 + 1
+>
+Exit:0
+Start_ns:1791665650069293771 End_ns:1791665654154893306
+
+differentiate natural log of x plus exp of x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: exp(x) + 1/x
+Answer: exp(x) + 1/x
+>
+Exit:0
+Start_ns:1791665654312483845 End_ns:1791665658473342149
+
+differentiate sine of x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: cos(x)
+Answer: cos(x)
+>
+Exit:0
+Start_ns:1791665658622080149 End_ns:1791665662407716800
+
+differentiate sine of x squared
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: 2*x*cos(x**2)
+Answer: 2*x*cos(x**2)
+>
+Exit:0
+Start_ns:1791665662570667108 End_ns:1791665666684277374
+
+differentiate cosine of x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: -sin(x)
+Answer: -sin(x)
+>
+Exit:0
+Start_ns:1791665666843872566 End_ns:1791665670630511333
+
+differentiate tangent of x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: tan(x)**2 + 1
+Answer: tan(x)**2 + 1
+>
+Exit:0
+Start_ns:1791665670773333256 End_ns:1791665674354715407
+
+differentiate natural log of x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: 1/x
+Answer: 1/x
+>
+Exit:0
+Start_ns:1791665674423414330 End_ns:1791665678249866404
+
+differentiate exp of x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: exp(x)
+Answer: exp(x)
+>
+Exit:0
+Start_ns:1791665678406505020 End_ns:1791665681753337133
+
+differentiate cosine of x plus tangent of x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: -sin(x) + tan(x)**2 + 1
+Answer: -sin(x) + tan(x)**2 + 1
+>
+Exit:0
+Start_ns:1791665681809443402 End_ns:1791665684881870861
+
+differentiate natural log of x plus exp of x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: exp(x) + 1/x
+Answer: exp(x) + 1/x
+>
+Exit:0
+Start_ns:1791665684953827015 End_ns:1791665688965480243
+
+differentiate sine of the quantity x squared plus one
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: 2*x*cos(x**2 + 1)
+Answer: 2*x*cos(x**2 + 1)
+>
+Exit:0
+Start_ns:1791665689123852743 End_ns:1791665693267234124
+
+differentiate exp of x squared
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: 2*x*exp(x**2)
+Answer: 2*x*exp(x**2)
+>
+Exit:0
+Start_ns:1791665693424062663 End_ns:1791665697630812160
+
+integrate sine of x
+MEDIUM LLM: qwen2.5:1.5b
+> Indefinite integral: -cos(x) + C
+Answer: -cos(x) + C
+>
+Exit:0
+Start_ns:1791665697783991083 End_ns:1791665702223688041
+
+find the limit of x squared minus four all over x minus two as x approaches two
+MEDIUM LLM: qwen2.5:1.5b
+> Limit: 4
+Answer: 4
+>
+Exit:0
+Start_ns:1791665702381227426 End_ns:1791665706735709615
+
+differentiate cosine of x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: -sin(x)
+Answer: -sin(x)
+>
+Exit:0
+Start_ns:1791665706892251115 End_ns:1791665710781020766
+
+differentiate tangent of x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: tan(x)**2 + 1
+Answer: tan(x)**2 + 1
+>
+Exit:0
+Start_ns:1791665710942962035 End_ns:1791665714947578570
+
+differentiate natural log of x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: 1/x
+Answer: 1/x
+>
+Exit:0
+Start_ns:1791665715110735993 End_ns:1791665718619661106
+
+differentiate exp of x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: exp(x)
+Answer: exp(x)
+>
+Exit:0
+Start_ns:1791665718685404106 End_ns:1791665722208501758
+
+differentiate cosine of x plus tangent of x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: -sin(x) + tan(x)**2 + 1
+Answer: -sin(x) + tan(x)**2 + 1
+>
+Exit:0
+Start_ns:1791665722361815065 End_ns:1791665725991878293
+
+differentiate natural log of x plus exp of x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: exp(x) + 1/x
+Answer: exp(x) + 1/x
+>
+Exit:0
+Start_ns:1791665726069793409 End_ns:1791665730080155598
+
+differentiate sine of the quantity x squared plus one
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: 2*x*cos(x**2 + 1)
+Answer: 2*x*cos(x**2 + 1)
+>
+Exit:0
+Start_ns:1791665730234247944 End_ns:1791665734465712595
+
+differentiate exp of x squared
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: 2*x*exp(x**2)
+Answer: 2*x*exp(x**2)
+>
+Exit:0
+Start_ns:1791665734623963249 End_ns:1791665738760575707
+
+integrate sine of x
+MEDIUM LLM: qwen2.5:1.5b
+> Indefinite integral: -cos(x) + C
+Answer: -cos(x) + C
+>
+Exit:0
+Start_ns:1791665738922799246 End_ns:1791665742816536551
+
+find the limit of x squared minus four all over x minus two as x approaches two
+MEDIUM LLM: qwen2.5:1.5b
+> Limit: 4
+Answer: 4
+>
+Exit:0
+Start_ns:1791665742894143704 End_ns:1791665746967963548
+
+differentiate exp of x squared
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: 2*x*exp(x**2)
+Answer: 2*x*exp(x**2)
+>
+Exit:0
+Start_ns:1791665747130364240 End_ns:1791665751279039660
+
+differentiate sine of the quantity x cubed plus two x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: (3*x**2 + 2)*cos(x**3 + 2*x)
+Answer: (3*x**2 + 2)*cos(x**3 + 2*x)
+>
+Exit:0
+Start_ns:1791665751439421044 End_ns:1791665755701625772
+
+differentiate natural log of the quantity x squared plus one
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: 2*x/(x**2 + 1)
+Answer: 2*x/(x**2 + 1)
+>
+Exit:0
+Start_ns:1791665755860783541 End_ns:1791665760078541038
+
+differentiate x squared times sine of x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: x**2*cos(x) + 2*x*sin(x)
+Answer: x**2*cos(x) + 2*x*sin(x)
+>
+Exit:0
+Start_ns:1791665760221697846 End_ns:1791665764389553304
+
+differentiate x squared plus one all over x minus one
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: 2*x/(x - 1) - (x**2 + 1)/(x - 1)**2
+Answer: 2*x/(x - 1) - (x**2 + 1)/(x - 1)**2
+>
+Exit:0
+Start_ns:1791665764543838804 End_ns:1791665768590463417
+
+differentiate sine of x times cosine of x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: -sin(x)**2 + cos(x)**2
+Answer: -sin(x)**2 + cos(x)**2
+>
+Exit:0
+Start_ns:1791665768671815455 End_ns:1791665772732032645
+
+differentiate exp of the quantity x squared plus three x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: (2*x + 3)*exp(x**2 + 3*x)
+Answer: (2*x + 3)*exp(x**2 + 3*x)
+>
+Exit:0
+Start_ns:1791665772893509144 End_ns:1791665777198496564
+
+integrate x times exp of x squared
+MEDIUM LLM: qwen2.5:1.5b
+> Indefinite integral: exp(x**2)/2 + C
+Answer: exp(x**2)/2 + C
+>
+Exit:0
+Start_ns:1791665777360348103 End_ns:1791665781433565061
+
+find the limit of x squared minus nine all over x minus three as x approaches three
+MEDIUM LLM: qwen2.5:1.5b
+> Limit: 6
+Answer: 6
+>
+Exit:0
+Start_ns:1791665781509105254 End_ns:1791665785111731905
+
+integrate three x squared plus two x from zero to three
+MEDIUM LLM: qwen2.5:1.5b
+> Definite integral: 36
+Answer: 36
+>
+Exit:0
+Start_ns:1791665785174134674 End_ns:1791665788912953248
+
+differentiate exp of x squared
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: 2*x*exp(x**2)
+Answer: 2*x*exp(x**2)
+>
+Exit:0
+Start_ns:1791665788998994748 End_ns:1791665793016798361
+
+differentiate sine of the quantity x cubed plus two x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: (3*x**2 + 2)*cos(x**3 + 2*x)
+Answer: (3*x**2 + 2)*cos(x**3 + 2*x)
+>
+Exit:0
+Start_ns:1791665793175177015 End_ns:1791665797445390704
+
+differentiate natural log of the quantity x squared plus one
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: 2*x/(x**2 + 1)
+Answer: 2*x/(x**2 + 1)
+>
+Exit:0
+Start_ns:1791665797603848204 End_ns:1791665801796170931
+
+differentiate x squared times sine of x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: x**2*cos(x) + 2*x*sin(x)
+Answer: x**2*cos(x) + 2*x*sin(x)
+>
+Exit:0
+Start_ns:1791665801946496508 End_ns:1791665806200352159
+
+differentiate x squared plus one all over x minus one
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: 2*x/(x - 1) - (x**2 + 1)/(x - 1)**2
+Answer: 2*x/(x - 1) - (x**2 + 1)/(x - 1)**2
+>
+Exit:0
+Start_ns:1791665806359573120 End_ns:1791665810604464925
+
+differentiate sine of x times cosine of x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: -sin(x)**2 + cos(x)**2
+Answer: -sin(x)**2 + cos(x)**2
+>
+Exit:0
+Start_ns:1791665810763870540 End_ns:1791665814971687076
+
+differentiate exp of the quantity x squared plus three x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: (2*x + 3)*exp(x**2 + 3*x)
+Answer: (2*x + 3)*exp(x**2 + 3*x)
+>
+Exit:0
+Start_ns:1791665815134077806 End_ns:1791665819407364034
+
+differentiate sine of x times cosine of x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: -sin(x)**2 + cos(x)**2
+Answer: -sin(x)**2 + cos(x)**2
+>
+Exit:0
+Start_ns:1791665819563552611 End_ns:1791665823529880300
+
+differentiate exp of the quantity x squared plus three x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: (2*x + 3)*exp(x**2 + 3*x)
+Answer: (2*x + 3)*exp(x**2 + 3*x)
+>
+Exit:0
+Start_ns:1791665823632886647 End_ns:1791665827723617374
+
+integrate x times exp of x squared
+MEDIUM LLM: qwen2.5:1.5b
+> Indefinite integral: exp(x**2)/2 + C
+Answer: exp(x**2)/2 + C
+>
+Exit:0
+Start_ns:1791665827880219567 End_ns:1791665831809240371
+
+find the limit of x squared minus nine all over x minus three as x approaches three
+MEDIUM LLM: qwen2.5:1.5b
+> Limit: 6
+Answer: 6
+>
+Exit:0
+Start_ns:1791665831868867256 End_ns:1791665836021803445
+
+integrate three x squared plus two x from zero to three
+MEDIUM LLM: qwen2.5:1.5b
+> Definite integral: 36
+Answer: 36
+>
+Exit:0
+Start_ns:1791665836182309945 End_ns:1791665840081855789
+
+differentiate exp of x squared
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: 2*x*exp(x**2)
+Answer: 2*x*exp(x**2)
+>
+Exit:0
+Start_ns:1791665840163413904 End_ns:1791665844052090709
+
+differentiate three x cubed plus two x squared minus five x plus seven
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: 9*x**2 + 4*x - 5
+Answer: 9*x**2 + 4*x - 5
+>
+Exit:0
+Start_ns:1791665844206588093 End_ns:1791665848453634283
+
+differentiate x squared times exp of x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: x**2*exp(x) + 2*x*exp(x)
+Answer: x**2*exp(x) + 2*x*exp(x)
+>
+Exit:0
+Start_ns:1791665848607160744 End_ns:1791665852820806664
+
+differentiate exp of the quantity x squared plus three x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: (2*x + 3)*exp(x**2 + 3*x)
+Answer: (2*x + 3)*exp(x**2 + 3*x)
+>
+Exit:0
+Start_ns:1791665852982230779 End_ns:1791665857230475238
+
+differentiate sine of x times cosine of x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: -sin(x)**2 + cos(x)**2
+Answer: -sin(x)**2 + cos(x)**2
+>
+Exit:0
+Start_ns:1791665857388311661 End_ns:1791665861605523081
+
+differentiate x cubed plus one all over x squared minus one
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: 3*x**2/(x**2 - 1) - 2*x*(x**3 + 1)/(x**2 - 1)**2
+Answer: 3*x**2/(x**2 - 1) - 2*x*(x**3 + 1)/(x**2 - 1)**2
+>
+Exit:0
+Start_ns:1791665861762886196 End_ns:1791665866022400193
+
+differentiate natural log of the quantity x cubed plus x squared plus one
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: (3*x**2 + 2*x)/(x**3 + x**2 + 1)
+Answer: (3*x**2 + 2*x)/(x**3 + x**2 + 1)
+>
+Exit:0
+Start_ns:1791665866180385885 End_ns:1791665870477259228
+
+integrate x times exp of x squared
+MEDIUM LLM: qwen2.5:1.5b
+> Indefinite integral: exp(x**2)/2 + C
+Answer: exp(x**2)/2 + C
+>
+Exit:0
+Start_ns:1791665870634735651 End_ns:1791665874649997187
+
+integrate three x squared plus two x from zero to three
+MEDIUM LLM: qwen2.5:1.5b
+> Definite integral: 36
+Answer: 36
+>
+Exit:0
+Start_ns:1791665874728800764 End_ns:1791665878551773107
+
+find the limit of x cubed minus eight all over x minus two as x approaches two
+MEDIUM LLM: qwen2.5:1.5b
+> Limit: 12
+Answer: 12
+>
+Exit:0
+Start_ns:1791665878638684107 End_ns:1791665882875155220
+
+differentiate sine of the quantity x cubed plus two x squared plus one
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: (3*x**2 + 4*x)*cos(x**3 + 2*x**2 + 1)
+Answer: (3*x**2 + 4*x)*cos(x**3 + 2*x**2 + 1)
+>
+Exit:0
+Start_ns:1791665883034065219 End_ns:1791665886819428101
+
+differentiate three x cubed plus two x squared minus five x plus seven
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: 9*x**2 + 4*x - 5
+Answer: 9*x**2 + 4*x - 5
+>
+Exit:0
+Start_ns:1791665886897834755 End_ns:1791665890815959099
+
+differentiate x squared times exp of x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: x**2*exp(x) + 2*x*exp(x)
+Answer: x**2*exp(x) + 2*x*exp(x)
+>
+Exit:0
+Start_ns:1791665890974872021 End_ns:1791665895152113634
+
+differentiate sine of x times cosine of x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: -sin(x)**2 + cos(x)**2
+Answer: -sin(x)**2 + cos(x)**2
+>
+Exit:0
+Start_ns:1791665895314086134 End_ns:1791665899528467323
+
+differentiate x cubed plus one all over x squared minus one
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: 3*x**2/(x**2 - 1) - 2*x*(x**3 + 1)/(x**2 - 1)**2
+Answer: 3*x**2/(x**2 - 1) - 2*x*(x**3 + 1)/(x**2 - 1)**2
+>
+Exit:0
+Start_ns:1791665899694508900 End_ns:1791665903954926281
+
+differentiate natural log of the quantity x cubed plus x squared plus one
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: (3*x**2 + 2*x)/(x**3 + x**2 + 1)
+Answer: (3*x**2 + 2*x)/(x**3 + x**2 + 1)
+>
+Exit:0
+Start_ns:1791665904105221858 End_ns:1791665908180079278
+
+integrate three x squared plus two x from zero to three
+MEDIUM LLM: qwen2.5:1.5b
+> Definite integral: 36
+Answer: 36
+>
+Exit:0
+Start_ns:1791665908331800624 End_ns:1791665912817910852
+
+integrate three x squared plus two x from zero to three
+MEDIUM LLM: qwen2.5:1.5b
+> Definite integral: 36
+Answer: 36
+>
+Exit:0
+Start_ns:1791665912973952967 End_ns:1791665916790319965
+
+differentiate sine of the quantity x cubed plus two x squared plus one
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: (3*x**2 + 4*x)*cos(x**3 + 2*x**2 + 1)
+Answer: (3*x**2 + 4*x)*cos(x**3 + 2*x**2 + 1)
+>
+Exit:0
+Start_ns:1791665916854700080 End_ns:1791665919981792770
+
+integrate x times exp of x squared
+MEDIUM LLM: qwen2.5:1.5b
+> Indefinite integral: exp(x**2)/2 + C
+Answer: exp(x**2)/2 + C
+>
+Exit:0
+Start_ns:1791665920059361731 End_ns:1791665923850964921
+
+find the limit of x cubed minus eight all over x minus two as x approaches two
+MEDIUM LLM: qwen2.5:1.5b
+> Limit: 12
+Answer: 12
+>
+Exit:0
+Start_ns:1791665923928259306 End_ns:1791665928056817803
+
+differentiate exp of the quantity x squared plus three x
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: (2*x + 3)*exp(x**2 + 3*x)
+Answer: (2*x + 3)*exp(x**2 + 3*x)
+>
+Exit:0
+Start_ns:1791665928213260264 End_ns:1791665932298296877
+
+differentiate sine of the quantity x cubed plus two x squared plus one
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: (3*x**2 + 4*x)*cos(x**3 + 2*x**2 + 1)
+Answer: (3*x**2 + 4*x)*cos(x**3 + 2*x**2 + 1)
+>
+Exit:0
+Start_ns:1791665932454589723 End_ns:1791665936801580604
+
+differentiate three x cubed plus two x squared minus five x plus seven
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: 9*x**2 + 4*x - 5
+Answer: 9*x**2 + 4*x - 5
+>
+Exit:0
+Start_ns:1791665936962047219 End_ns:1791665941219294178
+
+integrate three x squared plus two x from zero to three
+MEDIUM LLM: qwen2.5:1.5b
+> Definite integral: 36
+Answer: 36
+>
+Exit:0
+Start_ns:1791665941374677178 End_ns:1791665945654822213
+
+find the limit of x cubed minus eight all over x minus two as x approaches two
+MEDIUM LLM: qwen2.5:1.5b
+> Limit: 12
+Answer: 12
+>
+Exit:0
+Start_ns:1791665945807229905 End_ns:1791665950218656402
+root@flex:/data/sda4/BACKUPLLM#
+
+
+Quick grade of the run
+Metric	Result
+Total jobs	~140
+Successful (Exit:0)	Vast majority
+Timeouts (Exit:124)	2 (both were the limit problem with short 15 s timeout)
+Arithmetic questions	Almost all correct
+Factoring / solving equations	Correct
+Differentiation / integration	Correct
+Limits	Correct when it didn’t time out
+Typical latency	~3.5 – 4.5 seconds per query
+Longest successful runs	~4.5–5 s
+
+Overall grade: A-
+Very solid. The model (qwen2.5:1.5b) is accurate on this set of problems and consistent. Only the two short-timeout limit questions failed, which is expected.
