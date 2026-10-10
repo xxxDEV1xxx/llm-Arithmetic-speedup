@@ -259,4 +259,171 @@ Answer: -cos(x) + C
 MEDIUM LLM: qwen2.5:1.5b
 > Limit: 4
 Answer: 4
->
+>Several tests pass, but Test 6.2 exposes a real parser bug: differentiate exp of x squared returned 2*exp(2*x) instead of the expected 2xe
+x
+2
+. We should include that regression test alongside harder nested-function and grouped-fraction cases.
+
+Below are 10 increasingly difficult tests, each using your nanosecond timing wrapper. These run against /usr/local/bin/llm.new so we can test the patched parser without changing the live llm. Each command prints the exit status and start/end timestamps.
+
+Group 1 — Chain rule and nested functions
+Test 1 — Exponential of a square
+
+Asks: Differentiate e
+x
+2
+.
+
+Expected: 2xe
+x
+2
+, represented as 2*x*exp(x**2).
+
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate exp of x squared\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+Test 2 — Sine of a polynomial
+
+Asks: Differentiate sin(x
+3
++2x).
+
+Expected: (3x
+2
++2)cos(x
+3
++2x).
+
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate sine of the quantity x cubed plus two x\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+Test 3 — Logarithm of a square
+
+Asks: Differentiate ln(x
+2
++1).
+
+Expected: 
+x
+2
++1
+2x
+	​
+
+.
+
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate natural log of the quantity x squared plus one\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+Group 2 — Product and quotient rules
+Test 4 — Product of a polynomial and sine
+
+Asks: Differentiate x
+2
+sin(x).
+
+Expected: 2xsin(x)+x
+2
+cos(x).
+
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate x squared times sine of x\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+Test 5 — Quotient with an explicit denominator
+
+Asks: Differentiate 
+x−1
+x
+2
++1
+	​
+
+.
+
+Expected: 
+(x−1)
+2
+x
+2
+−2x−1
+	​
+
+.
+
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate x squared plus one all over x minus one\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+Group 3 — More complex differentiation
+Test 6 — Mixed trigonometric expression
+
+Asks: Differentiate sin(x)cos(x).
+
+Expected: cos
+2
+(x)−sin
+2
+(x).
+
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate sine of x times cosine of x\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+Test 7 — Exponential of a polynomial
+
+Asks: Differentiate e
+x
+2
++3x
+.
+
+Expected: (2x+3)e
+x
+2
++3x
+.
+
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate exp of the quantity x squared plus three x\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+Group 4 — Integration
+Test 8 — Polynomial times exponential
+
+Asks: Integrate xe
+x
+2
+.
+
+Expected: 
+2
+1
+	​
+
+e
+x
+2
++C.
+
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'integrate x times exp of x squared\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+Group 5 — Limits and definite integrals
+Test 9 — Removable discontinuity with a grouped fraction
+
+Asks: Evaluate lim
+x→3
+	​
+
+x−3
+x
+2
+−9
+	​
+
+.
+
+Expected: 6.
+
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'find the limit of x squared minus nine all over x minus three as x approaches three\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+Test 10 — Definite integral of a polynomial
+
+Asks: Evaluate ∫
+0
+3
+	​
+
+(3x
+2
++2x)dx.
+
+Expected: 36.
+
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'integrate three x squared plus two x from zero to three\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+
+Timing note: Start_ns and End_ns are timestamps, not elapsed time. To calculate elapsed seconds, subtract the start timestamp from the end timestamp and divide by 10
+9
+. A returned symbolic answer does not by itself prove that the fast path handled it; the output and timing should be considered together.
+
+Run Test 1 first. It targets the known exponential-power bug, which should be corrected before trusting the harder tests.
