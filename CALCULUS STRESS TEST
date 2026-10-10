@@ -1,0 +1,31 @@
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'find the limit of x squared minus four over x minus two as x approaches two\\n'\"'\"' | timeout 15 /usr/local/bin/llm.new 2\"'"
+
+MEDIUM LLM: qwen2.5:1.5b
+> Solutions: x = -7; x = 1
+Answer: x = -7; x = 1
+>
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'solve one divided by x minus one divided by quantity x plus one equals one\\n'\"'\"' | timeout 15 /usr/local/bin/llm.new 2\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Solutions: x = -1/2 + sqrt(5)/2, x = -sqrt(5)/2 - 1/2 (x != 0, -1)
+Answer: x = -1/2 + sqrt(5)/2, x = -sqrt(5)/2 - 1/2
+>
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'differentiate x cubed plus three x squared minus five x\\n'\"'\"' | timeout 15 /usr/local/bin/llm.new 2\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: 3*x**2 + 6*x - 5
+>
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'integrate three x squared plus two x\\n'\"'\"' | timeout 15 /usr/local/bin/llm.new 2\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Indefinite integral: x**3 + x**2 + C
+Answer: x**3 + x**2 + C
+>
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'integrate x squared from zero to three\\n'\"'\"' | timeout 15 /usr/local/bin/llm.new 2\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Definite integral: 9
+Answer: 9
+>
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'find the limit of x squared minus four over x minus two as x approaches two\\n'\"'\"' | timeout 15 /usr/local/bin/llm.new 2\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Limit: 4
+Answer: 4
+>
+root@flex:~#
