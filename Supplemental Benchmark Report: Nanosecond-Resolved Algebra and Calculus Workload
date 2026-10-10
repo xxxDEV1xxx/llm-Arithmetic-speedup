@@ -1,0 +1,127 @@
+# Supplemental Benchmark Report: Nanosecond-Resolved Algebra and Calculus Workload
+
+**Project:** Resource-Aware Local Language Model Runtime
+**Model:** Qwen 2.5 1.5B (`qwen2.5:1.5b`)
+**Author:** Christopher T. Williams
+**Evaluation type:** Multi-entry mathematical correctness and execution-latency benchmark
+**Status:** Supplemental experimental results
+
+## 1. Purpose
+
+This supplemental report documents the mathematical workload evaluation of a locally deployed language model runtime. The test exercises arithmetic, algebraic manipulation, equation solving, differentiation, integration, and limits while recording execution timing at nanosecond resolution.
+
+The objective is to evaluate the system as an operational mathematical workload rather than solely as a conversational language model. The benchmark considers answer correctness, execution consistency, timeout behavior, and the ability to measure performance across individual processing stages.
+
+Nanosecond-resolution timestamps provide the basis for examining where execution time is spent, provided that the relevant processing stages have independent timestamp boundaries in the test implementation.
+
+## 2. Workload and evaluation scope
+
+The reported workload contains approximately 140 jobs. This report is intended as the supplemental write-up for the 130-entry benchmark component; the exact number of entries belonging to that component must be confirmed against the original test script and run log.
+
+The evaluated problem categories include:
+
+* Arithmetic calculations.
+* Algebraic factoring and equation solving.
+* Symbolic differentiation.
+* Symbolic and definite integration.
+* Limit evaluation.
+
+The evaluation uses the locally deployed `qwen2.5:1.5b` model. The reported grading was performed by Grok using the resulting test output.
+
+## 3. Reported benchmark results
+
+| Metric                          | Reported result                         |
+| ------------------------------- | --------------------------------------- |
+| Total workload                  | Approximately 140 jobs                  |
+| Successful jobs                 | Vast majority                           |
+| Timeout failures                | 2                                       |
+| Timeout exit code               | `124`                                   |
+| Timeout conditions              | Limit problems with a 15-second timeout |
+| Arithmetic correctness          | Almost all reported answers correct     |
+| Factoring and equation solving  | Reported correct                        |
+| Differentiation and integration | Reported correct                        |
+| Limit evaluation                | Correct when completed                  |
+| Typical query latency           | Approximately 3.5–4.5 seconds           |
+| Longest successful runs         | Approximately 4.5–5 seconds             |
+| External grading result         | A−                                      |
+
+These figures are the reported evaluation results, not independently recalculated statistics. Exact success percentages, category-specific accuracy rates, and latency percentiles require the underlying job records.
+
+## 4. Nanosecond-resolution timing
+
+The test's use of nanosecond timestamps enables fine-grained elapsed-time measurement across the workload. For each stage with recorded start and end timestamps, elapsed time can be calculated as:
+
+$$
+T_{\mathrm{stage,ns}} =
+t_{\mathrm{end,ns}}-t_{\mathrm{start,ns}}
+$$
+
+For presentation, the same interval can be converted into milliseconds:
+
+$$
+T_{\mathrm{stage,ms}} =
+\frac{T_{\mathrm{stage,ns}}}{10^6}
+$$
+
+The raw nanosecond values should remain available for auditing and recalculation. Summary tables should use converted units that make comparisons between stages and individual jobs easier to interpret.
+
+The timestamp resolution must not be confused with measurement accuracy. The clock source, placement of timestamp calls, and inclusion of subprocess or model-execution overhead determine what each interval actually measures.
+
+### Stage-level reporting requirements
+
+Where the implementation records independent boundaries, the supplemental benchmark should report:
+
+1. **Job initialization:** Time to prepare and launch a test job.
+2. **Request preparation:** Time spent constructing or routing the mathematical request.
+3. **Inference execution:** Time attributable to the model request, as defined by the instrumentation.
+4. **Result handling:** Time spent collecting and processing the returned answer.
+5. **End-to-end execution:** Total elapsed time from the defined start of a job to its recorded completion.
+
+These are measurement categories, not claims that every stage is already instrumented. A stage should only be reported as measured when its actual timestamp boundaries exist in the implementation. The individual intervals should not be added together unless their boundaries are mutually exclusive and their coverage is complete.
+
+## 5. Mathematical correctness and completion
+
+The external grading reported strong performance across the tested mathematical categories. Arithmetic, factoring, equation solving, differentiation, and integration were reported as correct for the evaluated answers. Limit problems were also reported correct when they completed.
+
+Two jobs terminated with exit code `124` under the configured 15-second timeout. These should be classified as timeouts rather than automatically counted as incorrect mathematical answers. They represent failures to complete within the configured execution deadline.
+
+For formal reporting, the benchmark should distinguish:
+
+* **Completion rate:** Jobs that produced a completed result divided by all attempted jobs.
+* **Timeout rate:** Jobs that exceeded their execution deadline divided by all attempted jobs.
+* **Answer accuracy:** Correct completed answers divided by completed answers that could be evaluated.
+* **Overall successful-job rate:** Jobs producing a correct answer within the deadline divided by all attempted jobs.
+
+This separation prevents mathematical accuracy from being conflated with runtime reliability.
+
+## 6. Architectural significance
+
+The principal contribution demonstrated by this evaluation is the application of repeatable workload testing and fine-grained timing to a local mathematical inference system.
+
+The test provides evidence relevant to three engineering objectives.
+
+**First, workload coverage.** Testing multiple areas of algebra and calculus provides broader evidence than a benchmark consisting only of basic arithmetic.
+
+**Second, operational measurement.** Per-job timing can reveal variation across problem types and help identify stages responsible for latency, provided that the instrumentation measures those stages independently.
+
+**Third, explicit failure accounting.** Recording timeout exits makes it possible to evaluate both mathematical output and the system's ability to finish work within a defined deadline.
+
+These results support the reported performance of the tested configuration. They do not, by themselves, establish that the runtime architecture outperforms an earlier configuration. That conclusion requires a comparable baseline measured with the same workload, model, timeout policy, and timing definitions.
+
+## 7. Limitations
+
+The reported grade and summary metrics are not a substitute for a reproducible raw-data analysis. The available summary does not establish the exact number of entries in the 130-entry component, the exact number of successful jobs, category-specific denominators, median or percentile latency, or the distribution of individual stage timings.
+
+The two timeout events also warrant separate analysis. Increasing the timeout could establish whether the questions eventually complete, but doing so would change the benchmark conditions and should be reported as a separate run.
+
+Finally, timestamp precision alone does not demonstrate lower energy consumption, reduced thermal load, improved warm-state retention, or better CPU-governor behavior. Those outcomes require separate measurements.
+
+## 8. Conclusion
+
+The reported algebra and calculus run received an A− assessment from Grok, with approximately 140 jobs, two timeout failures, broadly correct mathematical results, and typical query latency of approximately 3.5–4.5 seconds.
+
+The strongest evidence from this run is the combination of broad mathematical workload coverage, recorded execution outcomes, and nanosecond-resolution timing. The next step is to derive exact per-job and per-stage statistics from the original script and raw output, then compare those results against a controlled baseline.
+
+This supplemental report documents the reported findings without presenting unverified design goals or unmeasured performance improvements as experimental results.
+
+**Attribution:** Research, implementation, and benchmark work are attributed to Christopher T. Williams. External grading is identified separately. Any AI assistance should be credited separately from the author's original implementation and research contributions.
