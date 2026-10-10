@@ -207,3 +207,56 @@ Expected answer: 4.
 adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'find the limit of x squared minus four all over x minus two as x approaches two\\n'\"'\"' | timeout 30 /usr/local/bin/llm.new 2\"'"
 
 Pass criteria: Each request should return a correct symbolic result promptly, ideally with both Derivative:, Indefinite integral:, or Limit: and Answer: labels. If a test produces an explanation rather than the expected result, or falls back to an incorrect model answer, save that output—we’ll fix the specific failure before proceeding to more complex calculus.
+
+
+root@flex:~#
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'differentiate cosine of x\\n'\"'\"' | timeout 30 /usr/local/bin/llm.new 2\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: -sin(x)
+Answer: -sin(x)
+>
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'differentiate tangent of x\\n'\"'\"' | timeout 30 /usr/local/bin/llm.new 2\"'"
+^@MEDIUM LLM: qwen2.5:1.5b
+> Derivative: tan(x)**2 + 1
+Answer: tan(x)**2 + 1
+>
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'differentiate natural log of x\\n'\"'\"' | timeout 30 /usr/local/bin/llm.new 2\"'"
+^@MEDIUM LLM: qwen2.5:1.5b
+> Derivative: 1/x
+Answer: 1/x
+>
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'differentiate exp of x\\n'\"'\"' | timeout 30 /usr/local/bin/llm.new 2\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: exp(x)
+Answer: exp(x)
+>
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'differentiate cosine of x plus tangent of x\\n'\"'\"' | timeout 30 /usr/local/bin/llm.new 2\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: -sin(x) + tan(x)**2 + 1
+Answer: -sin(x) + tan(x)**2 + 1
+>
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'differentiate natural log of x plus exp of x\\n'\"'\"' | timeout 30 /usr/local/bin/llm.new 2\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: exp(x) + 1/x
+Answer: exp(x) + 1/x
+>
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'differentiate sine of the quantity x squared plus one\\n'\"'\"' | timeout 30 /usr/local/bin/llm.new 2\"'"
+^@MEDIUM LLM: qwen2.5:1.5b
+> Derivative: 2*x*cos(x**2 + 1)
+Answer: 2*x*cos(x**2 + 1)
+>
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'differentiate exp of x squared\\n'\"'\"' | timeout 30 /usr/local/bin/llm.new 2\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: 2*exp(2*x)
+Answer: 2*exp(2*x)
+>
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'integrate sine of x\\n'\"'\"' | timeout 30 /usr/local/bin/llm.new 2\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Indefinite integral: -cos(x) + C
+Answer: -cos(x) + C
+>
+^@root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'find the limit of x squared minus four all over x minus two as x approaches two\\n'\"'\"' | timeout 30 /usr/local/bin/llm.new 2\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Limit: 4
+Answer: 4
+>
