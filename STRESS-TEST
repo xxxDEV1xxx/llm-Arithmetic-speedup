@@ -83,3 +83,32 @@ Answer: 925228
 >
 Exit:0
 Start_ns:1791645255170994774 End_ns:1791645256279385504
+
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'what is 18360 times 252 divided by 15 plus 48726 minus 936 times 27\\n'\"'\"' | timeout 300 /usr/local/bin/llm 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> 18360 * 252 / 15 + 48726 - 936 * 27 = 331902
+Answer: 331902
+>
+Exit:0
+Start_ns:1791645295578047745 End_ns:1791645296731659090
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'what is 27648 times 385 divided by 24 plus 15876 times 144 divided by 18 minus 74625\\n'\"'\"' | timeout 300 /usr/local/bin/llm 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> 27648 * 385 / 24 + 15876 * 144 / 18 - 74625 = 495903
+Answer: 495903
+>
+Exit:0
+Start_ns:1791645300478918934 End_ns:1791645301628135856
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'what is 38475 times 672 divided by 28 plus 247680 divided by 32 minus 15864 times 19 plus 73521 times 12 divided by 6\\n'\"'\"' | timeout 300 /usr/local/bin/llm 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> 38475 * 672 / 28 + 247680 / 32 - 15864 * 19 + 73521 * 12 / 6 = 776766
+Answer: 776766
+>
+Exit:0
+Start_ns:1791645305955215584 End_ns:1791645306828046814
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'what is 67284 times 945 divided by 35 plus 483840 divided by 28 minus 27456 times 32 plus 186375 times 24 divided by 15\\n'\"'\"' | timeout 300 /usr/local/bin/llm 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> 67284 * 945 / 35 + 483840 / 28 - 27456 * 32 + 186375 * 24 / 15 = 1253556
+Answer: 1253556
+>
+Exit:0
+Start_ns:1791645311070352465 End_ns:1791645312219528310
