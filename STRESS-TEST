@@ -1,0 +1,49 @@
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'what is 847 times 693\\n'\"'\"' | timeout 300 /usr/local/bin/llm 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> 847 * 693 = 586971
+Answer: 586971
+>
+Exit:0
+Start_ns:1791645061053041874 End_ns:1791645061413512759
+root@flex:~#
+root@flex:~#
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'what is 1847 times 936 divided by 24\\n'\"'\"' | timeout 300 /usr/local/bin/llm 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> 1847 * 936 / 24 = 72033
+Answer: 72033
+>
+Exit:0
+Start_ns:1791645085561688818 End_ns:1791645086466251241
+root@flex:~#
+root@flex:~#
+root@flex:~#
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'what is 7284 times 365 divided by 15 plus 1847 minus 629\\n'\"'\"' | timeout 300 /usr/local/bin/llm 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> 7284 * 365 / 15 + 1847 - 629 = 178462
+Answer: 178462
+>
+Exit:0
+Start_ns:1791645099939960808 End_ns:1791645101050103577
+root@flex:~#
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'what is 9635 times 728 divided by 16 plus 28479 minus 7364\\n'\"'\"' | timeout 300 /usr/local/bin/llm 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> 9635 * 728 / 16 + 28479 - 7364 = 459507.5
+Answer: 459507.5
+>
+Exit:0
+Start_ns:1791645117560663026 End_ns:1791645118711708487
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'what is 8736 times 245 divided by 12 plus 38765 minus 9284 times 3\\n'\"'\"' | timeout 300 /usr/local/bin/llm 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> 8736 * 245 / 12 + 38765 - 9284 * 3 = 189273
+Answer: 189273
+>
+Exit:0
+Start_ns:1791645131072968670 End_ns:1791645131924913593
+root@flex:~#
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'what is 15432 times 315 divided by 18 plus 67248 divided by 24 minus 5837 times 7\\n'\"'\"' | timeout 300 /usr/local/bin/llm 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> 15432 * 315 / 18 + 67248 / 24 - 5837 * 7 = 232003
+Answer: 232003
+>
+Exit:0
+Start_ns:1791645149623848888 End_ns:1791645150766126233
