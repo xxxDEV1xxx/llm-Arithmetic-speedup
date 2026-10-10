@@ -96,3 +96,114 @@ MEDIUM LLM: qwen2.5:1.5b
 Answer: 2*x*cos(x**2)
 >
 root@flex:~#
+Group 3 — Trigonometric functions
+Test 3.1 — Cosine
+
+Asks: Differentiate cos(x).
+
+Expected answer: −sin(x)
+
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'differentiate cosine of x\\n'\"'\"' | timeout 30 /usr/local/bin/llm.new 2\"'"
+Test 3.2 — Tangent
+
+Asks: Differentiate tan(x).
+
+Expected answer: sec
+2
+(x), equivalently 1/cos
+2
+(x).
+
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'differentiate tangent of x\\n'\"'\"' | timeout 30 /usr/local/bin/llm.new 2\"'"
+Group 4 — Logarithms and exponentials
+Test 4.1 — Natural logarithm
+
+Asks: Differentiate ln(x).
+
+Expected answer: 1/x
+
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'differentiate natural log of x\\n'\"'\"' | timeout 30 /usr/local/bin/llm.new 2\"'"
+Test 4.2 — Exponential
+
+Asks: Differentiate e
+x
+, expressed as exp of x.
+
+Expected answer: e
+x
+, or exp(x).
+
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'differentiate exp of x\\n'\"'\"' | timeout 30 /usr/local/bin/llm.new 2\"'"
+Group 5 — Combined expressions
+Test 5.1 — Sum of trigonometric functions
+
+Asks: Differentiate cos(x)+tan(x).
+
+Expected answer: −sin(x)+1/cos
+2
+(x).
+
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'differentiate cosine of x plus tangent of x\\n'\"'\"' | timeout 30 /usr/local/bin/llm.new 2\"'"
+Test 5.2 — Logarithm plus exponential
+
+Asks: Differentiate ln(x)+e
+x
+.
+
+Expected answer: 1/x+e
+x
+.
+
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'differentiate natural log of x plus exp of x\\n'\"'\"' | timeout 30 /usr/local/bin/llm.new 2\"'"
+Group 6 — Chain rule and explicit grouping
+Test 6.1 — Sine of a compound argument
+
+Asks: Differentiate sin(x
+2
++1), explicitly grouping the function argument.
+
+Expected answer: 2xcos(x
+2
++1).
+
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'differentiate sine of the quantity x squared plus one\\n'\"'\"' | timeout 30 /usr/local/bin/llm.new 2\"'"
+Test 6.2 — Exponential of a squared expression
+
+Asks: Differentiate e
+x
+2
+.
+
+Expected answer: 2xe
+x
+2
+.
+
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'differentiate exp of x squared\\n'\"'\"' | timeout 30 /usr/local/bin/llm.new 2\"'"
+Group 7 — Integration and limits
+Test 7.1 — Indefinite trigonometric integral
+
+Asks: Integrate sin(x) with respect to x.
+
+Expected answer: −cos(x)+C.
+
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'integrate sine of x\\n'\"'\"' | timeout 30 /usr/local/bin/llm.new 2\"'"
+Test 7.2 — Limit with a grouped fraction
+
+Asks: Evaluate lim
+x→2
+	​
+
+x−2
+x
+2
+−4
+	​
+
+.
+
+Expected answer: 4.
+
+adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"printf '\"'\"'find the limit of x squared minus four all over x minus two as x approaches two\\n'\"'\"' | timeout 30 /usr/local/bin/llm.new 2\"'"
+
+Pass criteria: Each request should return a correct symbolic result promptly, ideally with both Derivative:, Indefinite integral:, or Limit: and Answer: labels. If a test produces an explanation rather than the expected result, or falls back to an incorrect model answer, save that output—we’ll fix the specific failure before proceeding to more complex calculus.
