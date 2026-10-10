@@ -1,0 +1,120 @@
+Copyright (c) 2026 Christopher T. Williams
+
+License
+
+Permission is granted to use, copy, modify, and distribute this software solely for non-commercial research, testing, and security-analysis purposes, provided that the copyright notice and this permission notice are retained.
+
+Commercial use, sale, marketplace distribution, or monetization of this software, in whole or in part, is strictly prohibited without prior written consent from the author.
+
+THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. THE AUTHOR SHALL NOT BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+
+
+/data/sda4 only exists inside the chroot. On the Android side the card is at /mnt/media_rw/45e4285f-…/AIbuild. Your quoting also split the command: the > file redirect ran as the shell user, not root, which is why it said Permission denied. Check that nothing stray was created on the internal /data, using rmdir, which only removes empty directories:
+
+bash
+adb shell "su -c 'rmdir /data/sda4/knowledge /data/sda4 2>&1; ls -ld /data/sda4 2>&1'"
+
+Then write your note to the card, with your text unchanged. This overwrites the earlier arithmetic.txt:
+
+bash
+cat > /tmp/arithmetic.txt <<'EOF'
+Arithmetic fast path rules:
+Recognize direct arithmetic questions before knowledge retrieval or model inference.
+Support addition, subtraction, multiplication, division, floor division, modulo, exponentiation, parentheses, negative numbers, decimals, and standard operator precedence.
+Extract operands and operators deterministically and calculate in Python.
+Never divide by zero; return Undefined: division by zero.
+For recognized arithmetic, calculate and return Answer: result without invoking the model.
+For unsupported expressions and word problems, continue through the normal knowledge and model pipeline.
+EOF
+adb push /tmp/arithmetic.txt /data/local/tmp/arithmetic.txt
+adb shell "su -c 'mkdir -p /mnt/media_rw/45e4285f-5b14-40ea-89ca-ae6a59a14aa2/AIbuild/knowledge && cp /data/local/tmp/arithmetic.txt /mnt/media_rw/45e4285f-5b14-40ea-89ca-ae6a59a14aa2/AIbuild/knowledge/arithmetic.txt && cat /mnt/media_rw/45e4285f-5b14-40ea-89ca-ae6a59a14aa2/AIbuild/knowledge/arithmetic.txt'"
+
+That note is only reference text. The model reads it and nothing more. The calculation happens in code, and the code block I gave last time supports fewer features than your note lists (no parentheses, decimals, modulo, powers or precedence). This replacement implements every rule in the note using a safe ast evaluator, with no eval. It works on your /tmp/llm.new and uses patterns, not line numbers.
+
+Remove the earlier block if it was inserted. This deletes whatever sits between def model_chat and messages = kb_wrap(messages), and does nothing if there’s nothing there:
+
+bash
+sed -i '/^def model_chat/,/^    messages = kb_wrap(messages)/{/^def model_chat/!{/^    messages = kb_wrap(messages)/!d}}' /tmp/llm.new
+for m in re ast operator; do grep -q "^import $m\$" /tmp/llm.new || sed -i "/^import os\$/a import $m" /tmp/llm.new; done
+
+Write the helper functions and the hook:
+
+bash
+cat > /tmp/arith_funcs.py <<'EOF'
+
+_ARITH_OPS = {
+    ast.Add: operator.add, ast.Sub: operator.sub, ast.Mult: operator.mul,
+    ast.Div: operator.truediv, ast.FloorDiv: operator.floordiv,
+    ast.Mod: operator.mod, ast.Pow: operator.pow,
+    ast.USub: operator.neg, ast.UAdd: operator.pos,
+}
+_ARITH_WORDS = [
+    (r"\bto the power of\b", "**"), (r"\bdivided by\b", "/"),
+    (r"\bmultiplied by\b", "*"), (r"\btimes\b", "*"),
+    (r"\bplus\b", "+"), (r"\bminus\b", "-"), (r"\bmod(?:ulo)?\b", "%"),
+]
+
+
+def _arith_eval(node):
+    if isinstance(node, ast.Expression):
+        return _arith_eval(node.body)
+    if isinstance(node, ast.Constant) and type(node.value) in (int, float):
+        return node.value
+    if isinstance(node, ast.BinOp) and type(node.op) in _ARITH_OPS:
+        left, right = _arith_eval(node.left), _arith_eval(node.right)
+        if isinstance(node.op, ast.Pow) and (abs(right) > 1000 or abs(left) > 10 ** 6):
+            raise ValueError("too large")
+        return _ARITH_OPS[type(node.op)](left, right)
+    if isinstance(node, ast.UnaryOp) and type(node.op) in _ARITH_OPS:
+        return _ARITH_OPS[type(node.op)](_arith_eval(node.operand))
+    raise ValueError("unsupported")
+
+
+def arith_fast_path(text):
+    """Return the answer for direct arithmetic, or None to use the model."""
+    m = re.match(r"(?i)^\s*(?:what is|what's|calculate|compute|evaluate)\s+(.+)$", text.strip())
+    if not m:
+        return None
+    t = m.group(1).rstrip("?=. ").strip()
+    for pat, rep in _ARITH_WORDS:
+        t = re.sub(pat, rep, t, flags=re.I)
+    t = re.sub(r"(?<=\d)\s*x\s*(?=\d)", "*", t, flags=re.I)
+    t = t.replace("^", "**").replace(",", "")
+    if not re.fullmatch(r"[\d\s+\-*/%().]+", t) or not re.search(r"\d", t) or not re.search(r"[+\-*/%]", t):
+        return None
+    try:
+        val = _arith_eval(ast.parse(t, mode="eval"))
+    except ZeroDivisionError:
+        return "Undefined: division by zero."
+    except Exception:
+        return None
+    if isinstance(val, float):
+        val = int(val) if val.is_integer() else float(format(val, ".12g"))
+    return f"{t} = {val}\nAnswer: {val}"
+EOF
+cat > /tmp/arith_hook.py <<'EOF'
+    _fast = arith_fast_path(messages[-1]["content"])
+    if _fast is not None:
+        sys.stdout.write(_fast + "\n")
+        sys.stdout.flush()
+        return _fast
+EOF
+sed -i '/^URL = /r /tmp/arith_funcs.py' /tmp/llm.new
+sed -i '/^def model_chat/r /tmp/arith_hook.py' /tmp/llm.new
+grep -n -E "^import|^URL|^def arith_fast_path|^def model_chat|arith_fast_path\(messages" /tmp/llm.new
+sed -n '/^def model_chat/,/messages = kb_wrap/p' /tmp/llm.new
+
+In the grep output, you should see import re, import ast and import operator exactly once each, def arith_fast_path once, and the arith_fast_path(messages call once. The sed -n should show the hook directly under the model_chat header, then messages = kb_wrap(messages). If any line appears twice, an earlier insert is still there, so paste the grep output instead of installing.
+
+Install, syntax-check, and test the function directly without touching the model:
+
+bash
+adb push /tmp/llm.new /data/local/tmp/llm.new
+adb shell "su -c 'cp -n /data/local/nhsystem/kali-arm64/usr/local/bin/llm /data/local/nhsystem/kali-arm64/usr/local/bin/llm.bak; cp /data/local/tmp/llm.new /data/local/nhsystem/kali-arm64/usr/local/bin/llm && chmod 755 /data/local/nhsystem/kali-arm64/usr/local/bin/llm'"
+adb shell "su -c '$C python3 -m py_compile /usr/local/bin/llm && echo SYNTAX_OK'"
+
+Then open llm 2 and try these: what is 38 times 46 (1748), what is (12+8)*3^2 (180), what is 7 / 2 (3.5), what is 5 / 0 (the division-by-zero message). Each should answer instantly with no model load. what is the capital of France should still go to the model, because it doesn’t match the arithmetic pattern.
+
+The fast path only fires on messages starting with what is, what's, calculate, compute or evaluate. A bare 12*7 goes to the model. Say the word if you want bare expressions caught too. The cost is false positives on things like dates (2024-10-10 would evaluate to 2004).
