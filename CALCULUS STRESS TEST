@@ -744,4 +744,12 @@ Exit:0
 Start_ns:1791650984673350599 End_ns:1791650988024545327
 root@flex:~#
 
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate sine of the quantity x cubed plus two x squared plus one\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: (3*x**2 + 4*x)*cos(x**3 + 2*x**2 + 1)
+Answer: (3*x**2 + 4*x)*cos(x**3 + 2*x**2 + 1)
+>
+Exit:0
+Start_ns:1791651027457802607 End_ns:1791651030261413990
+root@flex:~#
 
