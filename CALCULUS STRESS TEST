@@ -771,3 +771,12 @@ Answer: 36
 Exit:0
 Start_ns:1791651087262969872 End_ns:1791651090959482061
 root@flex:~#
+
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'find the limit of x cubed minus eight all over x minus two as x approaches two\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Limit: 12
+Answer: 12
+>
+Exit:0
+Start_ns:1791651117620920812 End_ns:1791651121559595617
+root@flex:~#
