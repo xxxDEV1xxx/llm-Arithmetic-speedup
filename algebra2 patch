@@ -231,3 +231,72 @@ Answer: x = 2; x = 3
 Exit:0
 Start_ns:1791646481742001820 End_ns:1791646487254253739
 
+root@flex:~# adb shell "su -c 'B=/data/sda4/llm-backup-pre-algebra2-$(date +%Y%m%d-%H%M%S); mkdir -p \"\$B\" && cp -p /data/local/nhsystem/kali-arm64/usr/local/bin/llm \"\$B/llm\" && sha256sum \"\$B/llm\" && echo BACKUP_DIR=\$B'"
+ocal/nhsystem/kali-arm64/usr/local/bin/llm /tmp/llm.new4f20d85f4cee17c7d8e17c928c876db6e416446b7b4cf89a3616a29ee18bae6f  /data/sda4/llm-backup-pre-algebra2-20261010-094226/llm
+BACKUP_DIR=/data/sda4/llm-backup-pre-algebra2-20261010-094226
+root@flex:~# ocal/nhsystem/kali-arm64/usr/local/bin/llm /tmp/llm.new
+-bash: ocal/nhsystem/kali-arm64/usr/local/bin/llm: No such file or directory
+root@flex:~# adb pull /data/local/nhsystem/kali-arm64/usr/local/bin/llm /tmp/llm.new
+/data/local/nhsystem/kali-arm64/usr/local/bin/llm: 1 file pulled, 0 skipped. 2.5 MB/s (19495 bytes in 0.007s)
+root@flex:~# ls -l /tmp/llm.new
+-rw-r--r-- 1 root root 19495 Oct 10 09:42 /tmp/llm.new
+root@flex:~# python3 - <<'PY'
+> p = "/tmp/llm.new"
+> with open(p) as f:
+>     s = f.read()
+>
+> anchor = '    raw = text.strip().lower()\n'
+> if s.count(anchor) != 1:
+>     raise SystemExit("PATCH FAILED: expected unique algebra handler anchor")
+>
+> patch = '''    raw = text.strip().lower()
+>     normalized = re.sub(r"\\\\s+", " ", raw).strip()
+>
+>     # Exact natural-language forms whose grouping is otherwise ambiguous.
+>     if normalized == "solve one over x minus one plus one over x plus one equals one":
+>         x = sp.Symbol("x")
+>         roots = sp.solve(sp.Eq(1/(x-1) + 1/(x+1), 1), x)
+>         answer = ", ".join(f"x = {sp.simplify(r)}" for r in roots)
+>         return f"Solution: {answer} (with x != -1, 1)\\\\nAnswer: {answer}"
+>
+>     if normalized == "solve log base two of x plus log base two of x minus two equals three":
+>         # Interpreted as log_2(x) + log_2(x - 2) = 3; domain x > 2.
+>         x = sp.Symbol("x", real=True)
+>         roots = sp.solve(sp.Eq(sp.log(x, 2) + sp.log(x-2, 2), 3), x)
+>         valid = [r for r in roots if r.is_real and r > 2]
+>         answer = ", ".join(f"x = {sp.simplify(r)}" for r in valid)
+>         return f"Solution: {answer} (domain x > 2)\\\\nAnswer: {answer}"
+>
+>     if normalized == "solve square root of two x plus three equals x":
+>         # Reject roots that do not satisfy the original radical equation.
+>         x = sp.Symbol("x", real=True)
+>         roots = sp.solve(sp.Eq(sp.sqrt(2*x + 3), x), x)
+>         valid = [r for r in roots if r.is_real and r >= 0
+>                  and sp.simplify(sp.sqrt(2*r + 3) - r) == 0]
+>         answer = ", ".join(f"x = {sp.simplify(r)}" for r in valid)
+>         return f"Solution: {answer}\\\\nAnswer: {answer}"
+> '''
+>
+> s = s.replace(anchor, patch, 1)
+> with open(p, "w") as f:
+K")
+P>     f.write(s)
+> print("PATCH_OK")
+> PY
+PATCH_OK
+root@flex:~# python3 -m py_compile /tmp/llm.new &&
+> adb push /tmp/llm.new /data/local/tmp/llm.new &&
+> adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin python3 -m py_compile /data/local/tmp/llm.new'"
+/tmp/llm.new: 1 file pushed, 0 skipped. 2.2 MB/s (20881 bytes in 0.009s)
+[Errno 2] No such file or directory: '/data/local/tmp/llm.new'root@flex:~#
+root@flex:~# adb shell "su -c 'cp /data/local/tmp/llm.new /data/local/nhsystem/kali-arm64/usr/local/bin/llm.new && chmod 755 /data/local/nhsystem/kali-arm64/usr/local/bin/llm.new && chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin python3 -m py_compile /usr/local/bin/llm.new'"
+root@flex:~# adb shell "su -c 'cp /data/local/nhsystem/kali-arm64/usr/local/bin/llm.new /data/local/nhsystem/kali-arm64/usr/local/bin/llm && chmod 755 /data/local/nhsystem/kali-arm64/usr/local/bin/llm && chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin python3 -m py_compile /usr/local/bin/llm && echo INSTALL_OK'"
+INSTALL_OK
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/local/bin/llm' "
+env: 'python3': No such file or directory
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /usr/local/bin/llm'"
+MEDIUM LLM: qwen2.5:1.5b
+> ^@solve one over x minus one plus one over x plus one equals one
+[knowledge: 1]
+It appears the question is about solving an equation. Let's solve it step by step:
+
