@@ -692,3 +692,25 @@ PY
 
 adb push /tmp/llm.new /data/local/tmp/llm.new &&
 adb shell "su -c 'cp /data/local/tmp/llm.new /data/local/nhsystem/kali-arm64/usr/local/bin/llm.new && chmod 755 /data/local/nhsystem/kali-arm64/usr/local/bin/llm.new && chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin python3 -m py_compile /usr/local/bin/llm.new'"
+
+
+python3 - <<'PY'
+p = "/tmp/llm.new"
+s = open(p).read()
+needle = '            t = re.sub(r"\\s+", " ", t).strip()\n\n    # Only permit numeric expressions'
+replacement = '''            t = re.sub(r"\\\\s+", " ", t).strip()
+
+            # Normalize common implicit multiplication: 3 x -> 3*x,
+            # x 3 -> x*3, and x**2 3 -> x**2*3.
+            t = re.sub(r"(?<=[0-9])\\s+(?=[xy(])", "*", t)
+            t = re.sub(r"(?<=[xy)])\\s+(?=[0-9xy(])", "*", t)
+            t = re.sub(r"(?<=\\))\\s+(?=[A-Za-z_])", "*", t)
+            t = re.sub(r"(?<=\\d)\\s+(?=[A-Za-z_])", "*", t)
+
+    # Only permit numeric expressions'''
+assert s.count(needle) == 1, "Insertion point changed; no file written"
+open(p, "w").write(s.replace(needle, replacement))
+print("Patched:", p)
+PY
+python3 -m py_compile /tmp/llm.new
+
