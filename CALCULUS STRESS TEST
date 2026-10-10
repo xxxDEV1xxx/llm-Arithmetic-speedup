@@ -629,3 +629,91 @@ Expected derivative:
 Timing note: The commands print nanosecond start and end timestamps, not elapsed time directly. Calculate elapsed seconds as (End_ns−Start_ns)/10
 9
 . Tests 7 and 9 above have a typo in the end timestamp assignment; use T1=\\\$(date +%s%N) (without a space) if you run those two.
+
+root@flex:~#
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate three x cubed plus two x squared minus five x plus seven\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Differentiate 3x^3 + 2x^2 - 5x + 7:
+3 * (3x^2) + 2 * (2x) - 5 * (1) = 9x^2 + 4x - 5
+
+Answer: 9x^2 + 4x - 5
+>
+Exit:0
+Start_ns:1791650328026764030 End_ns:1791650364492097927
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate x squared times exp of x\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: x**2*exp(x) + 2*x*exp(x)
+Answer: x**2*exp(x) + 2*x*exp(x)
+>
+Exit:0
+Start_ns:1791650370325251731 End_ns:1791650373547382767
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate exp of the quantity x squared plus three x\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> The expression "x squared plus three x" can be differentiated using the power rule of differentiation.
+
+Differentiating:
+
+\( \frac{d}{dx}(x^2 + 3x) \)
+
+First, differentiate each term separately:
+
+1. For \( x^2 \):
+   \( \frac{d}{dx}(x^2) = 2x \)
+
+2. For \( 3x \):
+   \( \frac{d}{dx}(3x) = 3 \)
+
+Now combine the results:
+
+\( \frac{d}{dx}(x^2 + 3x) = 2x + 3 \)
+
+So, theExit:124
+Start_ns:1791650378205127456 End_ns:1791650438236693798
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate sine of x times cosine of x\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: -sin(x)**2 + cos(x)**2
+Answer: -sin(x)**2 + cos(x)**2
+>
+Exit:0
+Start_ns:1791650447198215291 End_ns:1791650448676141790
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate x cubed plus one all over x squared minus one\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: 3*x**2/(x**2 - 1) - 2*x*(x**3 + 1)/(x**2 - 1)**2
+Answer: 3*x**2/(x**2 - 1) - 2*x*(x**3 + 1)/(x**2 - 1)**2
+>
+Exit:0
+Start_ns:1791650452485039018 End_ns:1791650455680948247
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate natural log of the quantity x cubed plus x squared plus one\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: (3*x**2 + 2*x)/(x**3 + x**2 + 1)
+Answer: (3*x**2 + 2*x)/(x**3 + x**2 + 1)
+>
+Exit:0
+Start_ns:1791650459630219244 End_ns:1791650462815940242
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'integrate x times exp of x squared\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$ (date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+/bin/sh: 1: Syntax error: "(" unexpected
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'integrate three x squared plus two x from zero to three\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> ∫ from 0 to 3 of (3x^2 + 2x) dx = [x^3 + x^2] from 0 to 3 = 3^3 + 3^2 - (0^3 + 0^2) = 27 + 9 = 36 Answer: 36
+>
+Exit:0
+Start_ns:1791650476657186232 End_ns:1791650512770872783
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'integrate three x squared plus two x from zero to three\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> ∫(3x^2 + 2x) dx from 0 to 3
+= [x^3 + x^2] from 0 to 3
+= (3^3 + 3^2) - (0^3 + 0^2)
+= (27 + 9) - (0)
+= 36
+>
+Exit:0
+Start_ns:1791650519291283778 End_ns:1791650552954224869
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'find the limit of x cubed minus eight all over x minus two as x approaches two\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$ (date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+/bin/sh: 1: Syntax error: "(" unexpected
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate sine of the quantity x cubed plus two x squared plus one\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> sin(x^3 + 2x^2 + 1)
+>
+Exit:0
+Start_ns:1791650562531989363 End_ns:1791650575875983968
+root@flex:~#
