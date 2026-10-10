@@ -669,4 +669,24 @@ print("TRANSLATED:", translated)
 print("PARSED:", parsed)
 print("DERIVATIVE:", sp.diff(parsed, x))
 PY
+python3 - <<'PY'
+from pathlib import Path
+
+p = Path("/tmp/llm.new")
+s = p.read_text()
+s2 = s.replace(
+    r'r"\\b(exp|exponential)\\s+of\\s+([xy])\\s+squared\\b"',
+    r'r"\b(exp|exponential)\s+of\s+([xy])\s+squared\b"'
+).replace(
+    r'r"\\b(exp|exponential)\\s+of\\s+([xy])\\s+cubed\\b"',
+    r'r"\b(exp|exponential)\s+of\s+([xy])\s+cubed\b"'
+)
+
+if s2 == s:
+    raise SystemExit("No matching escaped regex lines found; file unchanged.")
+
+compile(s2, str(p), "exec")
+p.write_text(s2)
+print("Corrected regex escaping; Python syntax is valid.")
+PY
 
