@@ -732,3 +732,16 @@ Answer: 12
 Exit:0
 Start_ns:1791650756025736301 End_ns:1791650760031721760
 root@flex:~#
+
+
+
+root@flex:~# adb shell "su -c 'chroot /data/local/nhsystem/kali-arm64 /usr/bin/env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /bin/sh -c \"T0=\\\$(date +%s%N); printf '\"'\"'differentiate exp of the quantity x squared plus three x\\n'\"'\"' | timeout 60 /usr/local/bin/llm.new 2; RC=\\\$?; T1=\\\$(date +%s%N); echo Exit:\\\$RC; echo Start_ns:\\\$T0 End_ns:\\\$T1\"'"
+MEDIUM LLM: qwen2.5:1.5b
+> Derivative: (2*x + 3)*exp(x**2 + 3*x)
+Answer: (2*x + 3)*exp(x**2 + 3*x)
+>
+Exit:0
+Start_ns:1791650984673350599 End_ns:1791650988024545327
+root@flex:~#
+
+
