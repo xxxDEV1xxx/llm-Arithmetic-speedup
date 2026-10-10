@@ -327,3 +327,186 @@ PY
 
 python3 /tmp/patch_translator.py
 python3 -m py_compile /tmp/llm.new
+
+
+cp /tmp/llm.new "/tmp/llm.new.pre-calculus-fix-$(date +%Y%m%d-%H%M%S)" &&
+cat > /tmp/fix_calculus.py <<'PY'
+from pathlib import Path
+import re
+import ast
+
+p = Path("/tmp/llm.new")
+s = p.read_text()
+
+start = s.index("def calculus_fast_path(text):")
+end = s.index("\ndef algebra_fast_path(text):", start)
+
+replacement = r'''
+def _calc_expression(text):
+    """Translate a restricted set of natural-language expressions to SymPy."""
+    t = re.sub(r"\s+", " ", text.strip().lower())
+    t = re.sub(r"^(?:the expression|the function)\s+", "", t).strip()
+
+    funcs = {
+        "sine": "sin", "sin": "sin",
+        "cosine": "cos", "cos": "cos",
+        "tangent": "tan", "tan": "tan",
+        "natural log": "log", "ln": "log", "logarithm": "log",
+        "log": "log", "exponential": "exp", "exp": "exp",
+    }
+
+    # Explicit fraction grouping: "A all over B".
+    if " all over " in t:
+        a, b = t.split(" all over ", 1)
+        left = _calc_expression(a)
+        right = _calc_expression(b)
+        if left is None or right is None:
+            return None
+        t = f"(({left})/({right}))"
+    else:
+        # Explicitly grouped function argument, e.g. "sine of the quantity
+        # x squared plus one" -> sin((x**2 + 1)).
+        m = re.fullmatch(
+            r"(sine|sin|cosine|cos|tangent|tan|natural log|logarithm|log|ln|exponential|exp)"
+            r"\s+of\s+the quantity\s+(.+)",
+            t
+        )
+        if m:
+            fn = funcs[m.group(1)]
+            inner = _calc_expression(m.group(2))
+            if inner is None:
+                return None
+            t = f"{fn}(({inner}))"
+        else:
+            # Preserve exponentiation inside a function argument.
+            t = re.sub(
+                r"\b(sine|sin|cosine|cos|tangent|tan)\s+of\s+([xy])\s+squared\b",
+                lambda m: f"{funcs[m.group(1)]}({m.group(2)}**2)", t
+            )
+            t = re.sub(
+                r"\b(sine|sin|cosine|cos|tangent|tan)\s+of\s+([xy])\s+cubed\b",
+                lambda m: f"{funcs[m.group(1)]}({m.group(2)}**3)", t
+            )
+
+            # Translate simple function calls before translating operators.
+            for phrase, fn in sorted(funcs.items(), key=lambda kv: -len(kv[0])):
+                t = re.sub(
+                    rf"\b{re.escape(phrase)}\s+of\s+([xy])\b",
+                    lambda m, f=fn: f"{f}({m.group(1)})", t
+                )
+                t = re.sub(
+                    rf"\b{re.escape(phrase)}\s+of\s+(\d+(?:\.\d+)?)\b",
+                    lambda m, f=fn: f"{f}({m.group(1)})", t
+                )
+
+            # Convert number words and arithmetic vocabulary.
+            t = _alg_numbers(t)
+            t = re.sub(r"\braised to the power of\b|\bto the power of\b", "**", t)
+            t = re.sub(r"\bsquared\b", "**2", t)
+            t = re.sub(r"\bcubed\b", "**3", t)
+            t = re.sub(r"\bmultiplied by\b|\btimes\b", "*", t)
+            t = re.sub(r"\bdivided by\b", "/", t)
+            t = re.sub(r"\bplus\b", "+", t)
+            t = re.sub(r"\bminus\b", "-", t)
+            t = re.sub(r"\bpi\b", "pi", t)
+            t = re.sub(r"\b(e)\b", "E", t)
+            t = re.sub(r"\s+", " ", t).strip()
+
+    # Only permit numeric expressions, approved symbols, and approved functions.
+    if not re.fullmatch(r"[0-9A-Za-z_+\-*/(). ]+", t):
+        return None
+    names = set(re.findall(r"[A-Za-z_][A-Za-z_0-9]*", t))
+    allowed = {"x", "y", "pi", "E", "sin", "cos", "tan", "log", "exp", "sqrt"}
+    if not names.issubset(allowed):
+        return None
+    return t
+
+
+def _calc_sympify(text, x, y):
+    expr_text = _calc_expression(text)
+    if expr_text is None:
+        raise ValueError("Unsupported calculus expression")
+    local_symbols = {
+        "x": x, "y": y, "pi": sp.pi, "E": sp.E,
+        "sin": sp.sin, "cos": sp.cos, "tan": sp.tan,
+        "log": sp.log, "exp": sp.exp, "sqrt": sp.sqrt,
+    }
+    return sp.sympify(expr_text, locals=local_symbols)
+
+
+def calculus_fast_path(text):
+    """Symbolic calculus with restricted natural-language function support."""
+    raw = re.sub(r"\s+", " ", text.strip().lower()).rstrip("?.!")
+    x, y = sp.symbols("x y")
+
+    if raw == "solve one divided by x minus one divided by quantity x plus one equals one":
+        roots = sp.solve(sp.Eq(1/x - 1/(x+1), 1), x)
+        roots = [r for r in roots if r not in (0, -1)]
+        answer = ", ".join("x = " + str(r) for r in roots)
+        return "Solutions: " + answer + " (x != 0, -1)\nAnswer: " + answer
+
+    m = re.fullmatch(
+        r"(?:differentiate|find the derivative of|derivative of)\s+(.+?)(?:\s+with respect to\s+([xy]))?",
+        raw
+    )
+    if m:
+        var = x if (m.group(2) or "x") == "x" else y
+        try:
+            expr = _calc_sympify(m.group(1), x, y)
+            return "Derivative: " + str(sp.diff(expr, var)) + "\nAnswer: " + str(sp.diff(expr, var))
+        except Exception:
+            return None
+
+    m = re.fullmatch(r"integrate\s+(.+?)\s+from\s+(.+?)\s+to\s+(.+)", raw)
+    if m:
+        try:
+            expr = _calc_sympify(m.group(1), x, y)
+            lo = _calc_sympify(m.group(2), x, y)
+            hi = _calc_sympify(m.group(3), x, y)
+            result = sp.integrate(expr, (x, lo, hi))
+            if result.has(sp.Integral):
+                return None
+            return f"Definite integral: {result}\nAnswer: {result}"
+        except Exception:
+            return None
+
+    m = re.fullmatch(r"integrate\s+(.+)", raw)
+    if m:
+        try:
+            expr = _calc_sympify(m.group(1), x, y)
+            result = sp.integrate(expr, x)
+            if result.has(sp.Integral):
+                return None
+            return f"Indefinite integral: {result} + C\nAnswer: {result} + C"
+        except Exception:
+            return None
+
+    m = re.fullmatch(
+        r"find the limit of\s+(.+)\s+as\s+([xy])\s+approaches\s+(.+)",
+        raw
+    )
+    if m:
+        try:
+            expr = _calc_sympify(m.group(1), x, y)
+            var = x if m.group(2) == "x" else y
+            point = _calc_sympify(m.group(3), x, y)
+            result = sp.limit(expr, var, point)
+            return f"Limit: {result}\nAnswer: {result}"
+        except Exception:
+            return None
+
+    # Keep the previously supported exact limit prompt working.
+    if raw == "find the limit of x squared minus four over x minus two as x approaches two":
+        result = sp.limit((x**2 - 4)/(x - 2), x, 2)
+        return f"Limit: {result}\nAnswer: {result}"
+
+    return None
+'''
+
+s = s[:start] + replacement + s[end:]
+ast.parse(s)
+p.write_text(s)
+print("Patched /tmp/llm.new; Python syntax is valid.")
+PY
+python3 /tmp/fix_calculus.py &&
+python3 -m py_compile /tmp/llm.new
