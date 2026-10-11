@@ -1,0 +1,224 @@
+#!/data/local/nhsystem/kali-arm64/usr/bin/python3
+
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+# ---------- Configuration ----------
+LOG_FILE = Path("/data/sda4/llm_benchmark.log")
+DEFAULT_MODEL = "/usr/local/bin/llm.new"
+
+# Make sure the log directory exists
+LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+
+def invoke_llm(prompt: str, timeout: int = 60, model: str = DEFAULT_MODEL) -> None:
+    """Run one prompt, time it, and append result to the log file."""
+    start_ns = time.perf_counter_ns()
+
+    try:
+        result = subprocess.run(
+            [model],
+            input=prompt + "\n",
+            text=True,
+            capture_output=True,
+            timeout=timeout,
+        )
+        rc = result.returncode
+        stdout = result.stdout.strip()
+        stderr = result.stderr.strip()
+    except subprocess.TimeoutExpired:
+        rc = -1
+        stdout = ""
+        stderr = f"TIMEOUT after {timeout}s"
+    except Exception as e:
+        rc = -2
+        stdout = ""
+        stderr = f"ERROR: {e}"
+
+    end_ns = time.perf_counter_ns()
+    duration_ms = (end_ns - start_ns) / 1_000_000
+
+    # Build log entry
+    log_entry = (
+        f"{'='*80}\n"
+        f"PROMPT : {prompt}\n"
+        f"MODEL  : {model}\n"
+        f"EXIT   : {rc}\n"
+        f"TIME   : {duration_ms:.3f} ms\n"
+        f"STDOUT :\n{stdout}\n"
+    )
+    if stderr:
+        log_entry += f"STDERR :\n{stderr}\n"
+    log_entry += f"{'='*80}\n\n"
+
+    # Append to log file
+    with open(LOG_FILE, "a", encoding="utf-8") as f:
+        f.write(log_entry)
+
+
+JOBS = [
+    {"N": 1, "P": "what is 847 times 693", "T": 300, "M": "/usr/local/bin/llm"},
+    {"N": 2, "P": "what is 1847 times 936 divided by 24", "T": 300, "M": "/usr/local/bin/llm"},
+    {"N": 3, "P": "what is 7284 times 365 divided by 15 plus 1847 minus 629", "T": 300, "M": "/usr/local/bin/llm"},
+    {"N": 4, "P": "what is 9635 times 728 divided by 16 plus 28479 minus 7364", "T": 300, "M": "/usr/local/bin/llm"},
+    {"N": 5, "P": "what is 8736 times 245 divided by 12 plus 38765 minus 9284 times 3", "T": 300, "M": "/usr/local/bin/llm"},
+    {"N": 6, "P": "what is 15432 times 315 divided by 18 plus 67248 divided by 24 minus 5837 times 7", "T": 300, "M": "/usr/local/bin/llm"},
+    {"N": 7, "P": "what is 15432 times 315 divided by 18 plus 67248 divided by 24 minus 5837 times 7", "T": 300, "M": "/usr/local/bin/llm"},
+    {"N": 8, "P": "what is 2468 times 135 divided by 9 plus 7284 minus 5617", "T": 300, "M": "/usr/local/bin/llm"},
+    {"N": 9, "P": "what is 5832 times 245 divided by 12 plus 7644 times 36 divided by 8 minus 19275", "T": 300, "M": "/usr/local/bin/llm"},
+    {"N": 10, "P": "what is 18756 times 324 divided by 18 plus 94560 divided by 24 minus 6837 times 11 plus 42719", "T": 300, "M": "/usr/local/bin/llm"},
+    {"N": 11, "P": "what is 28476 times 735 divided by 21 plus 156384 divided by 16 minus 9472 times 23 plus 68325 times 14 divided by 7", "T": 300, "M": "/usr/local/bin/llm"},
+    {"N": 12, "P": "what is 18360 times 252 divided by 15 plus 48726 minus 936 times 27", "T": 300, "M": "/usr/local/bin/llm"},
+    {"N": 13, "P": "what is 27648 times 385 divided by 24 plus 15876 times 144 divided by 18 minus 74625", "T": 300, "M": "/usr/local/bin/llm"},
+    {"N": 14, "P": "what is 38475 times 672 divided by 28 plus 247680 divided by 32 minus 15864 times 19 plus 73521 times 12 divided by 6", "T": 300, "M": "/usr/local/bin/llm"},
+    {"N": 15, "P": "what is 67284 times 945 divided by 35 plus 483840 divided by 28 minus 27456 times 32 plus 186375 times 24 divided by 15", "T": 300, "M": "/usr/local/bin/llm"},
+    {"N": 16, "P": "factor x squared minus five x plus six", "T": 60},
+    {"N": 17, "P": "factor x squared plus seven x plus twelve", "T": 60},
+    {"N": 18, "P": "factor four x squared minus twenty five", "T": 60},
+    {"N": 19, "P": "solve x squared minus five x plus six equals zero", "T": 60},
+    {"N": 20, "P": "solve two x squared plus seven x plus three equals zero", "T": 60},
+    {"N": 21, "P": "solve x squared plus six x minus seven equals zero by completing the square", "T": 60},
+    {"N": 22, "P": "solve square root of two x plus three equals x", "T": 60},
+    {"N": 23, "P": "solve one over x minus one plus one over x plus one equals one", "T": 60},
+    {"N": 24, "P": "solve two raised to the power of x equals thirty two", "T": 60},
+    {"N": 25, "P": "solve log base two of x plus log base two of x minus two equals three", "T": 60},
+    {"N": 26, "P": "solve the system y equals x squared and y equals two x plus three", "T": 60},
+    {"N": 27, "P": "factor x squared plus seven x plus twelve", "T": 60},
+    {"N": 28, "P": "factor four x squared minus twenty five", "T": 60},
+    {"N": 29, "P": "factor four x squared minus twenty five", "T": 60},
+    {"N": 30, "P": "solve x squared minus five x plus six equals zero", "T": 60},
+    {"N": 31, "P": "solve x squared minus five x plus six equals zero", "T": 60},
+    {"N": 32, "P": "solve two x squared plus seven x plus three equals zero", "T": 60},
+    {"N": 33, "P": "solve x squared plus six x minus seven equals zero by completing the square", "T": 60},
+    {"N": 34, "P": "solve x squared plus six x minus seven equals zero by completing the square", "T": 60},
+    {"N": 35, "P": "solve square root of two x plus three equals x", "T": 60},
+    {"N": 36, "P": "solve one over x minus one plus one over x plus one equals one", "T": 60},
+    {"N": 37, "P": "solve two raised to the power of x equals thirty two", "T": 60},
+    {"N": 38, "P": "solve log base two of x plus log base two of x minus two equals three", "T": 60},
+    {"N": 39, "P": "solve the system y equals x squared and y equals two x plus three", "T": 60},
+    {"N": 40, "P": "solve x squared minus five x plus six equals zero", "T": 60},
+    {"N": 41, "P": "solve two x squared plus seven x plus three equals zero", "T": 60},
+    {"N": 42, "P": "solve x squared plus six x minus seven equals zero by completing the square", "T": 60},
+    {"N": 43, "P": "solve the system y equals x squared and y equals two x plus three", "T": 60},
+    {"N": 44, "P": "solve two raised to the power of x equals thirty two", "T": 60},
+    {"N": 45, "P": "solve square root of two x plus three equals x", "T": 60},
+    {"N": 46, "P": "solve one over x minus one plus one over x plus one equals one", "T": 60},
+    {"N": 47, "P": "solve log base two of x plus log base two of x minus two equals three", "T": 60},
+    {"N": 48, "P": "solve one divided by x minus one divided by quantity x plus one equals one", "T": 60},
+    {"N": 49, "P": "solve x squared minus five x plus six equals zero", "T": 60},
+    {"N": 50, "P": "solve two x squared plus seven x plus three equals zero", "T": 60},
+    {"N": 51, "P": "solve x squared plus six x minus seven equals zero by completing the square", "T": 60},
+    {"N": 52, "P": "solve the system y equals x squared and y equals two x plus three", "T": 60},
+    {"N": 53, "P": "solve two raised to the power of x equals thirty two", "T": 60},
+    {"N": 54, "P": "solve square root of two x plus three equals x", "T": 60},
+    {"N": 55, "P": "solve one over x minus one plus one over x plus one equals one", "T": 60},
+    {"N": 56, "P": "solve log base two of x plus log base two of x minus two equals three", "T": 60},
+    {"N": 57, "P": "solve one divided by x minus one divided by quantity x plus one equals one", "T": 60},
+    {"N": 58, "P": "solve the system x squared plus y squared equals twenty five and y equals x minus one", "T": 60},
+    {"N": 59, "P": "find the limit of x squared minus four over x minus two as x approaches two", "T": 15},
+    {"N": 60, "P": "solve one divided by x minus one divided by quantity x plus one equals one", "T": 15},
+    {"N": 61, "P": "differentiate sine of x", "T": 30},
+    {"N": 62, "P": "integrate three x squared plus two x", "T": 15},
+    {"N": 63, "P": "integrate x squared from zero to three", "T": 15},
+    {"N": 64, "P": "find the limit of x squared minus four over x minus two as x approaches two", "T": 15},
+    {"N": 65, "P": "what is 1847 times 936 divided by 24", "T": 30},
+    {"N": 66, "P": "differentiate sine of x", "T": 30},
+    {"N": 67, "P": "differentiate sine of x squared", "T": 30},
+    {"N": 68, "P": "differentiate cosine of x plus tangent of x", "T": 30},
+    {"N": 69, "P": "differentiate natural log of x plus exp of x", "T": 30},
+    {"N": 70, "P": "differentiate sine of x", "T": 30},
+    {"N": 71, "P": "differentiate sine of x squared", "T": 30},
+    {"N": 72, "P": "differentiate cosine of x", "T": 30},
+    {"N": 73, "P": "differentiate tangent of x", "T": 30},
+    {"N": 74, "P": "differentiate natural log of x", "T": 30},
+    {"N": 75, "P": "differentiate exp of x", "T": 30},
+    {"N": 76, "P": "differentiate cosine of x plus tangent of x", "T": 30},
+    {"N": 77, "P": "differentiate natural log of x plus exp of x", "T": 30},
+    {"N": 78, "P": "differentiate sine of the quantity x squared plus one", "T": 30},
+    {"N": 79, "P": "differentiate exp of x squared", "T": 30},
+    {"N": 80, "P": "integrate sine of x", "T": 30},
+    {"N": 81, "P": "find the limit of x squared minus four all over x minus two as x approaches two", "T": 30},
+    {"N": 82, "P": "differentiate cosine of x", "T": 30},
+    {"N": 83, "P": "differentiate tangent of x", "T": 30},
+    {"N": 84, "P": "differentiate natural log of x", "T": 30},
+    {"N": 85, "P": "differentiate exp of x", "T": 30},
+    {"N": 86, "P": "differentiate cosine of x plus tangent of x", "T": 30},
+    {"N": 87, "P": "differentiate natural log of x plus exp of x", "T": 30},
+    {"N": 88, "P": "differentiate sine of the quantity x squared plus one", "T": 30},
+    {"N": 89, "P": "differentiate exp of x squared", "T": 30},
+    {"N": 90, "P": "integrate sine of x", "T": 30},
+    {"N": 91, "P": "find the limit of x squared minus four all over x minus two as x approaches two", "T": 30},
+    {"N": 92, "P": "differentiate exp of x squared", "T": 60},
+    {"N": 93, "P": "differentiate sine of the quantity x cubed plus two x", "T": 60},
+    {"N": 94, "P": "differentiate natural log of the quantity x squared plus one", "T": 60},
+    {"N": 95, "P": "differentiate x squared times sine of x", "T": 60},
+    {"N": 96, "P": "differentiate x squared plus one all over x minus one", "T": 60},
+    {"N": 97, "P": "differentiate sine of x times cosine of x", "T": 60},
+    {"N": 98, "P": "differentiate exp of the quantity x squared plus three x", "T": 60},
+    {"N": 99, "P": "integrate x times exp of x squared", "T": 60},
+    {"N": 100, "P": "find the limit of x squared minus nine all over x minus three as x approaches three", "T": 60},
+    {"N": 101, "P": "integrate three x squared plus two x from zero to three", "T": 60},
+    {"N": 102, "P": "differentiate exp of x squared", "T": 60},
+    {"N": 103, "P": "differentiate sine of the quantity x cubed plus two x", "T": 60},
+    {"N": 104, "P": "differentiate natural log of the quantity x squared plus one", "T": 60},
+    {"N": 105, "P": "differentiate x squared times sine of x", "T": 60},
+    {"N": 106, "P": "differentiate x squared plus one all over x minus one", "T": 60},
+    {"N": 107, "P": "differentiate sine of x times cosine of x", "T": 60},
+    {"N": 108, "P": "differentiate exp of the quantity x squared plus three x", "T": 60},
+    {"N": 109, "P": "differentiate sine of x times cosine of x", "T": 60},
+    {"N": 110, "P": "differentiate exp of the quantity x squared plus three x", "T": 60},
+    {"N": 111, "P": "integrate x times exp of x squared", "T": 60},
+    {"N": 112, "P": "find the limit of x squared minus nine all over x minus three as x approaches three", "T": 60},
+    {"N": 113, "P": "integrate three x squared plus two x from zero to three", "T": 60},
+    {"N": 115, "P": "differentiate exp of x squared", "T": 30},
+    {"N": 116, "P": "differentiate three x cubed plus two x squared minus five x plus seven", "T": 60},
+    {"N": 117, "P": "differentiate x squared times exp of x", "T": 60},
+    {"N": 118, "P": "differentiate exp of the quantity x squared plus three x", "T": 60},
+    {"N": 119, "P": "differentiate sine of x times cosine of x", "T": 60},
+    {"N": 120, "P": "differentiate x cubed plus one all over x squared minus one", "T": 60},
+    {"N": 121, "P": "differentiate natural log of the quantity x cubed plus x squared plus one", "T": 60},
+    {"N": 122, "P": "integrate x times exp of x squared", "T": 60},
+    {"N": 123, "P": "integrate three x squared plus two x from zero to three", "T": 60},
+    {"N": 124, "P": "find the limit of x cubed minus eight all over x minus two as x approaches two", "T": 60},
+    {"N": 125, "P": "differentiate sine of the quantity x cubed plus two x squared plus one", "T": 60},
+    {"N": 126, "P": "differentiate three x cubed plus two x squared minus five x plus seven", "T": 60},
+    {"N": 127, "P": "differentiate x squared times exp of x", "T": 60},
+    {"N": 128, "P": "differentiate sine of x times cosine of x", "T": 60},
+    {"N": 129, "P": "differentiate x cubed plus one all over x squared minus one", "T": 60},
+    {"N": 130, "P": "differentiate natural log of the quantity x cubed plus x squared plus one", "T": 60},
+    {"N": 131, "P": "integrate three x squared plus two x from zero to three", "T": 60},
+    {"N": 132, "P": "integrate three x squared plus two x from zero to three", "T": 60},
+    {"N": 133, "P": "differentiate sine of the quantity x cubed plus two x squared plus one", "T": 60},
+    {"N": 134, "P": "integrate x times exp of x squared", "T": 60},
+    {"N": 135, "P": "find the limit of x cubed minus eight all over x minus two as x approaches two", "T": 60},
+    {"N": 136, "P": "differentiate exp of the quantity x squared plus three x", "T": 60},
+    {"N": 137, "P": "differentiate sine of the quantity x cubed plus two x squared plus one", "T": 60},
+    {"N": 138, "P": "differentiate three x cubed plus two x squared minus five x plus seven", "T": 60},
+    {"N": 139, "P": "integrate three x squared plus two x from zero to three", "T": 60},
+    {"N": 140, "P": "find the limit of x cubed minus eight all over x minus two as x approaches two", "T": 60},
+]
+
+
+def main():
+    print(f"Logging results to {LOG_FILE}", flush=True)
+    print(f"Running {len(JOBS)} jobs silently...\n", flush=True)
+
+    for i, job in enumerate(JOBS, 1):
+        model = job.get("M", DEFAULT_MODEL)
+        print(f"[{i}/{len(JOBS)}] N={job['N']}  model={model}", flush=True)
+        invoke_llm(
+            prompt=job["P"],
+            timeout=job["T"],
+            model=model,
+        )
+
+    print(f"\nDone. Full log written to {LOG_FILE}")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\nInterrupted.", file=sys.stderr)
+        sys.exit(130)
