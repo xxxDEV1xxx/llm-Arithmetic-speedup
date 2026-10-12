@@ -2,6 +2,8 @@
 simple Arithmetic 
 Copyright (c) 2026 Christopher T. Williams
 
+QWEN LLM benchmarking my new handlers architecture-tool specific Test 2 2026 10 11 22 45 05
+https://youtu.be/ByVWafq80Ts
 License
 
 Permission is granted to use, copy, modify, and distribute this software solely for non-commercial research, testing, and security-analysis purposes, provided that the copyright notice and this permission notice are retained.
